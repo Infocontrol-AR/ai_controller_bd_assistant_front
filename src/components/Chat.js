@@ -47,7 +47,7 @@ const Chat = () => {
 
     try {
       const response = await fetch(
-        "https://regards-inns-compression-cgi.trycloudflare.com/bot/chat/",
+        "http://localhost:5000/bot/chat_v3",
         {
           method: "POST",
           headers: {
@@ -57,64 +57,10 @@ const Chat = () => {
         }
       );
 
-      if (!response.ok) {
-        data = {
-          response: [
-            {
-              apellido: "PACHECO GODOY",
-              nombre: "ANTONIO LEONIDAS",
-            },
-            {
-              apellido: "PACHECO GODOY2",
-              nombre: "ANTONIO LEONIDAS",
-            },
-            {
-              apellido: "PACHECO GODOY3",
-              nombre: "ANTONIO LEONIDAS",
-            },
-          ],
-        };
-      } else {
-        data = await response.json();
-      }
+      data = await response.json();
+      // const tableHtml = arrayToTable(data.data.response);
 
-      if (
-        Array.isArray(data.response) &&
-        data.response.length > 0 &&
-        typeof data.response[0] === "object"
-      ) {
-        const tableHtml = arrayToTable(data.response);
-        addMessage(tableHtml, false);
-      } else {
-        addMessage(JSON.stringify(data.response), false);
-      }
-    } catch (e) {
-      data = {
-        response: [
-          {
-            apellido: "PACHECO GODOY",
-            nombre: "ANTONIO LEONIDAS",
-          },
-          {
-            apellido: "PACHECO GODOY2",
-            nombre: "ANTONIO LEONIDAS",
-          },
-          {
-            apellido: "PACHECO GODOY3",
-            nombre: "ANTONIO LEONIDAS",
-          },
-        ],
-      };
-      if (
-        Array.isArray(data.response) &&
-        data.response.length > 0 &&
-        typeof data.response[0] === "object"
-      ) {
-        const tableHtml = arrayToTable(data.response);
-        addMessage(tableHtml, false);
-      } else {
-        addMessage(JSON.stringify(data.response), false);
-      }
+      addMessage(data.responseIA, false);
     } finally {
       setLoading(false);
       inputRef.current?.focus();
@@ -141,8 +87,7 @@ const Chat = () => {
         <div ref={messagesEndRef} />
       </div>
       <Input onSend={fetchApiData} loading={loading} inputRef={inputRef} />
-      {showPrompts && <ExamplePrompts onPromptClick={fetchApiData} />}{" "}
-      {}
+      {showPrompts && <ExamplePrompts onPromptClick={fetchApiData} />}
     </div>
   );
 };

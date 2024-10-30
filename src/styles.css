@@ -46,8 +46,7 @@ body {
     padding: 1rem 0;
     overflow-y: auto;
     height: 60%;
-    display: flex;
-    flex-direction: column;
+    display: block;
 }
 
 .message {
@@ -56,6 +55,7 @@ body {
     border-radius: 8px;
     background: hsl(240, 11%, 91%);
     max-width: 60%;
+    max-height: 30vh;
     word-wrap: break-word;
 }
 
@@ -69,6 +69,7 @@ body {
     background: #f1f1f1;
     color: black;
     margin-right: auto;
+    overflow: auto;
 }
 
 .input {
@@ -132,6 +133,18 @@ table tr:hover {
     background-color: #e9ecef;
 }
 
-::-webkit-scrollbar {
-    display: none !important;
+/* ::-webkit-scrollbar {
+    display: none;
+} */
+
+textarea {
+    width: 100%;
 }
+
+textarea::-webkit-scrollbar {
+    display: none;
+} 
+
+.messages::-webkit-scrollbar {
+    display: none;
+} 

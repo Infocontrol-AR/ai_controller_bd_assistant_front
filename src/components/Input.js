@@ -5,15 +5,18 @@ const Input = ({ onSend, loading, inputRef }) => {
 
     const handleSend = () => {
         if (input.trim()) {
+            if (inputRef.current) {
+                inputRef.current.style.height = 'auto';
+            }
             onSend(input);
-            setInput(''); 
+            setInput('');
         }
     };
 
     useEffect(() => {
         if (inputRef.current) {
             inputRef.current.style.height = 'auto';
-            // inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 96)}px`;
+            inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 96)}px`;
         }
     }, [input, inputRef]);
 
