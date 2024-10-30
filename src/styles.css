@@ -1,136 +1,136 @@
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f0f0;
-    color: #343a40;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f0f0;
+  color: #343a40;
 }
 
 .app {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #343a40;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #343a40;
 }
 
 .chat {
-    background-color: #343a40;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    max-width: 60vw;
-    max-height: 80vh;
-    padding: 4rem;
-    display: flex;
-    flex-direction: column;
+  background-color: #343a40;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  max-width: 60vw;
+  max-height: 80vh;
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .logo {
-    margin: auto;
-    max-width: 40%;
-    max-height: 25%;
-    display: block;
-    align-self: center;
+  margin: auto;
+  max-width: 40%;
+  max-height: 25%;
+  display: block;
+  align-self: center;
 }
 
 .small-logo {
-    max-width: 30%;
+  max-width: 30%;
 }
 
 .messages {
-    flex: 1;
-    padding: 1rem 0;
-    overflow-y: auto;
-    height: 60%;
-    display: block;
+  flex: 1;
+  padding: 1rem 0;
+  overflow-y: auto;
+  height: 60%;
+  display: block;
 }
 
 .message {
-    margin-bottom: 12px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    background: hsl(240, 11%, 91%);
-    max-width: 60%;
-    max-height: 30vh;
-    word-wrap: break-word;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: hsl(240, 11%, 91%);
+  max-width: 60%;
+  max-height: 30vh;
+  word-wrap: break-word;
 }
 
 .message.user {
-    background: #007bff;
-    color: white;
-    margin-left: auto;
+  background: #007bff;
+  color: white;
+  margin-left: auto;
 }
 
 .message.bot {
-    background: #f1f1f1;
-    color: black;
-    margin-right: auto;
-    overflow: auto;
+  background: #f1f1f1;
+  color: black;
+  margin-right: auto;
+  overflow: auto;
 }
 
 .input {
-    display: flex;
-    padding-top: 1rem;
-    border-top: 1px solid #dee2e6;
-    max-height: 15%;
+  display: flex;
+  padding-top: 1rem;
+  border-top: 1px solid #dee2e6;
+  max-height: 15%;
 }
 
 .input textarea {
-    padding: 10px;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
-    margin-right: 10px;
-    height: 2rem;
-    max-height: 6rem;
-    width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  margin-right: 10px;
+  height: 2rem;
+  max-height: 6rem;
+  width: 100%;
 }
 
 .input button {
-    padding: 10px 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  padding: 10px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .input button:disabled {
-    background-color: #007bff;
-    opacity: 0.6;
+  background-color: #007bff;
+  opacity: 0.6;
 }
 
 .input button:hover:not(:disabled) {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 table th,
 table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #dee2e6;
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
 }
 
 table th {
-    background: #f8f9fa;
-    color: #495057;
+  background: #f8f9fa;
+  color: #495057;
 }
 
 table tr:nth-child(even) {
-    background-color: #f2f2f2;
+  background-color: #f2f2f2;
 }
 
 table tr:hover {
-    background-color: #e9ecef;
+  background-color: #e9ecef;
 }
 
 /* ::-webkit-scrollbar {
@@ -138,13 +138,27 @@ table tr:hover {
 } */
 
 textarea {
-    width: 100%;
+  width: 100%;
 }
 
 textarea::-webkit-scrollbar {
-    display: none;
-} 
+  display: none;
+}
 
 .messages::-webkit-scrollbar {
-    display: none;
-} 
+  display: none;
+}
+.message-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px; /* Espacio entre el mensaje y los botones */
+}
+
+.message-actions .btn {
+  opacity: 0.7; /* Semitransparente */
+  margin-left: 4px; /* Espacio entre botones */
+}
+
+.message-actions .btn:hover {
+  opacity: 1; /* Más opaco al pasar el mouse */
+}

@@ -11,32 +11,17 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
   const [showPrompts, setShowPrompts] = useState(true);
 
-  const addMessage = (message, isUser = true) =>
-    setMessages((prev) => [...prev, { text: message, isUser }]);
+  const addMessage = (message, isUser = true) => {
+    // Guardar el mensaje original para copiarlo sin etiquetas HTML
+    const originalMessage = message;
+    const formattedMessage = message.replace(/\n/g, "<br/>");
+    setMessages((prev) => [...prev, { text: formattedMessage, isUser, originalMessage }]);
+  };
 
-  const arrayToTable = (array) => {
-    if (
-      !Array.isArray(array) ||
-      array.length === 0 ||
-      typeof array[0] !== "object"
-    ) {
-      return "<p>El array proporcionado no es válido o está vacío.</p>";
-    }
-
-    const headers = Object.keys(array[0]);
-    const headerRow = `<tr>${headers
-      .map((key) => `<th>${key}</th>`)
-      .join("")}</tr>`;
-    const bodyRows = array
-      .map(
-        (obj) =>
-          `<tr>${headers
-            .map((key) => `<td>${obj[key] || ""}</td>`)
-            .join("")}</tr>`
-      )
-      .join("");
-
-    return `<table border="1"><thead>${headerRow}</thead><tbody>${bodyRows}</tbody></table>`;
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      console.log("Texto copiado al portapapeles");
+    });
   };
 
   const fetchApiData = async (prompt) => {
@@ -58,8 +43,6 @@ const Chat = () => {
       );
 
       data = await response.json();
-      // const tableHtml = arrayToTable(data.data.response);
-
       addMessage(data.responseIA, false);
     } finally {
       setLoading(false);
@@ -82,7 +65,12 @@ const Chat = () => {
       />
       <div className="messages">
         {messages.map((msg, idx) => (
-          <Message key={idx} text={msg.text} isUser={msg.isUser} />
+          <Message 
+            key={idx} 
+            text={msg.text} 
+            isUser={msg.isUser} 
+            onCopy={() => copyToClipboard(msg.originalMessage)} 
+          />
         ))}
         <div ref={messagesEndRef} />
       </div>
