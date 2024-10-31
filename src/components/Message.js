@@ -1,13 +1,23 @@
 import React from "react";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
-const Message = ({ text, isUser, onCopy }) => (
+const Message = ({ text, isUser, onCopy, onExport, onRefresh }) => (
   <div className={`message ${isUser ? 'user' : 'bot'}`}>
     <span dangerouslySetInnerHTML={{ __html: text }} />
     <div className="message-actions">
-      <button onClick={onCopy} className="btn btn-sm btn-outline-secondary" title="Copiar">
-        <i className="bi bi-clipboard"></i>
-      </button>
-      {/* Aquí puedes añadir el botón de exportar más tarde */}
+      {!isUser && (  // Mostrar botones solo si es un mensaje del bot
+        <>
+          <button onClick={onRefresh}>
+            <i className="bi bi-arrow-clockwise" aria-label="refresh"></i> {/* Icono de refrescar */}
+          </button>
+          <button onClick={onCopy}>
+            <i className="bi bi-clipboard" aria-label="copy"></i> {/* Icono de copiar */}
+          </button>
+          <button onClick={onExport}>
+            <i className="bi bi-download" aria-label="export"></i> {/* Icono de exportar */}
+          </button>
+        </>
+      )}
     </div>
   </div>
 );

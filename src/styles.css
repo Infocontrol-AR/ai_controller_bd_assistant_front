@@ -69,7 +69,8 @@ body {
   background: #f1f1f1;
   color: black;
   margin-right: auto;
-  overflow: auto;
+  /* overflow: auto; */
+  max-height: none;
 }
 
 .input {
@@ -148,17 +149,18 @@ textarea::-webkit-scrollbar {
 .messages::-webkit-scrollbar {
   display: none;
 }
+
 .message-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 4px; /* Espacio entre el mensaje y los botones */
-}
-
-.message-actions .btn {
-  opacity: 0.7; /* Semitransparente */
-  margin-left: 4px; /* Espacio entre botones */
-}
-
-.message-actions .btn:hover {
-  opacity: 1; /* Más opaco al pasar el mouse */
-}
+    display: flex;
+    gap: 5px; /* Espacio entre los botones */
+    margin-top: 5px; /* Espacio entre el mensaje y los botones */
+  }
+  
+  .message-actions button {
+    background: rgba(255, 255, 255, 0.7); /* Fondo semitransparente */
+    border: none;
+    cursor: pointer;
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 5px 10px; /* Espaciado interno */
+  }
+  

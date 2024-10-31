@@ -3,7 +3,7 @@ import React from 'react';
 
 const prompts = [
     { label: 'Ver empleados', prompt: 'Quiero ver una lista de empleados' },
-    { label: 'Último contratista añadido', prompt: '¿Quién fue el último contratista añadido?' },
+    { label: 'Ver empresas', prompt: 'Quiero ver una lista de empresas' },
     { label: '¿Por qué se rechazó mi documento?', prompt: '¿Por qué se rechazó mi documento?' }
 ];
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Input = ({ onSend, loading, inputRef }) => {
+const Input = ({ onSend, loading, inputRef, disabled }) => {
     const [input, setInput] = useState('');
 
     const handleSend = () => {
@@ -20,6 +20,13 @@ const Input = ({ onSend, loading, inputRef }) => {
         }
     }, [input, inputRef]);
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSend();
+        }
+    };
+
     return (
         <div className="input d-flex">
             <button className="btn btn-secondary me-2">
@@ -29,11 +36,12 @@ const Input = ({ onSend, loading, inputRef }) => {
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                onKeyPress={handleKeyPress}
                 placeholder="Escribe un mensaje..."
                 className="form-control me-2"
                 rows="1"
                 style={{ resize: 'none' }}
+                disabled={disabled}
             />
             <button onClick={handleSend} className="btn btn-primary" disabled={loading}>
                 {loading ? (
