@@ -4,7 +4,7 @@ import React from 'react';
 const prompts = [
     { label: 'Ver empleados', prompt: 'Quiero ver una lista de empleados' },
     { label: 'Ver empresas', prompt: 'Quiero ver una lista de empresas' },
-    { label: '¿Por qué se rechazó mi documento?', prompt: '¿Por qué se rechazó mi documento?' }
+    { label: 'Ultimo documento cargado', prompt: '¿Cual es el ultimo documento cargado y su estado?' }
 ];
 
 const ExamplePrompts = ({ onPromptClick }) => {

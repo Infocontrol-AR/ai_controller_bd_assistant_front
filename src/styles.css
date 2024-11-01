@@ -164,3 +164,66 @@ textarea::-webkit-scrollbar {
     padding: 5px 10px; /* Espaciado interno */
   }
   
+  .sidebar {
+    width: 50px;
+    transition: width 0.3s ease;
+    overflow: hidden;
+    background-color: #343a40;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+}
+
+.sidebar.open {
+    width: 200px;
+}
+
+.button-container {
+  display: flex;
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 25px;
+    color: white;
+    margin-right: auto;
+}
+
+.new-chat-btn {
+  background-color: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: none; 
+}
+
+.sidebar.open .new-chat-btn {
+  display: block; 
+}
+
+.sidebar-content {
+    margin-top: 20px;
+    color: white;
+}
+
+.separator {
+    height: 1px; /* Altura de la línea separadora */
+    background-color: white; /* Color de la línea */
+    margin: 1px 0; /* Margen vertical alrededor de la línea */
+    padding: 0px !important;
+}
+
+.sidebar-content ul {
+  font-size: 11px;
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-content li {
+    padding: 10px 0;
+}
