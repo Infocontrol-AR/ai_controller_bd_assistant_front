@@ -5,7 +5,7 @@ import Message from "./Message";
 import ExamplePrompts from "./ExamplePrompts";
 import * as XLSX from "xlsx";
 
-const Chat = () => {
+const Chat = ({ selectedChatId, onNewChat, refreshChats }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -13,73 +13,127 @@ const Chat = () => {
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
   const [showPrompts, setShowPrompts] = useState(true);
+  const [idChat, setIdChat] = useState(selectedChatId || null);
 
-  const addMessage = (message, isUser = true, responseSQL = null, prompt = null) => {
-    const originalMessage = message;
-    const formattedMessage = message
-      .replace(/\n/g, "<br/>")
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  useEffect(() => {
+    if (selectedChatId === null) {
+      setMessages([]);
+      setIdChat(null);
+      setShowPrompts(true);
+      return;
+    }
 
-    setMessages((prev) => [
-      ...prev,
-      { text: formattedMessage, isUser, originalMessage, responseSQL, prompt },
-    ]);
-  };
+    if (selectedChatId) {
+      setIdChat(selectedChatId);
+      fetchChatHistory(selectedChatId);
+    } else {
+      setMessages([]);
+    }
+  }, [selectedChatId]);
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert("Texto copiado al portapapeles");
-    });
+  const fetchChatHistory = async (id_chat) => {
+    setLoading(true);
+    setInputDisabled(true);
+    setShowPrompts(false);
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/chat/obtener-chat/${id_chat}`
+      );
+      const data = await response.json();
+      const formattedMessages = data[0].history.map((item) => ({
+        text: item.content
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\n/g, "<br/>"),
+        isUser: item.role === "user",
+        responseSQL: item.responseSQL || null,
+        onRefresh: item.onRefresh,
+      }));
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error("Error al cargar el historial:", error);
+      addMessage("Error al cargar el historial. Intente nuevamente.", false);
+    } finally {
+      setLoading(false);
+      setInputDisabled(false);
+    }
   };
 
   const fetchApiData = async (prompt) => {
-    addMessage(prompt);
+    addMessage(prompt, true);
     setLoading(true);
     setInputDisabled(true);
-
-    let data;
+    setShowPrompts(false);
 
     try {
-      const response = await fetch("http://localhost:5000/bot/chat_v3", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt }),
-      });
+      const response = await fetch(
+        "http://localhost:5000/chat/enviar-mensaje",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt, id_user: 1, id_chat: idChat }),
+        }
+      );
 
-      data = await response.json();
-      console.log(data);
-      addMessage(data.responseIA, false, data.responseSQL, prompt);
-    } catch (e) {
-      console.log(e);
-      addMessage('Verifique la logica de su consulta e intente nuevamente', false, []);
+      const data = await response.json();
+
+      if (data.id_chat && !idChat) {
+        setIdChat(data.id_chat);
+        onNewChat(data.id_chat);
+        refreshChats();
+      }
+
+      if (data.history) {
+        const formattedMessages = data.history.map((item) => ({
+          text: item.content
+            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+            .replace(/\n/g, "<br/>"),
+          isUser: item.role === "user",
+          responseSQL: item.responseSQL || null,
+          onRefresh: item.onRefresh,
+        }));
+        setMessages(formattedMessages);
+      } else if (data.error) {
+        addMessage(
+          "Verifique la lógica de su consulta e intente nuevamente",
+          false
+        );
+      }
+    } catch {
+      addMessage(
+        "Error en la comunicación con el servidor. Intente nuevamente.",
+        false
+      );
     } finally {
       setLoading(false);
       setInputDisabled(false);
       inputRef.current?.focus();
-      setShowPrompts(false);
     }
   };
 
-  const handleRefresh = (prompt) => {
-    fetchApiData(prompt);
+  const addMessage = (message, isUser = true) => {
+    if (!message) return;
+    setMessages((prev) => [...prev, { text: message, isUser }]);
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => alert("Texto copiado al portapapeles"));
   };
 
   const exportToExcel = async (responseSQL) => {
-    if (!responseSQL || !Array.isArray(responseSQL) || responseSQL.length === 0) {
+    if (!Array.isArray(responseSQL) || responseSQL.length === 0) {
       alert("No se puede exportar un elemento vacío.");
       return;
     }
 
     setExporting(true);
-
     const worksheet = XLSX.utils.json_to_sheet(responseSQL);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Datos");
 
     const range = XLSX.utils.decode_range(worksheet["!ref"]);
-
     for (let col = range.s.c; col <= range.e.c; col++) {
       const columnWidth = Math.max(
         ...responseSQL.map((row) => String(row[Object.keys(row)[col]]).length),
@@ -89,30 +143,18 @@ const Chat = () => {
       worksheet["!cols"][col] = { wch: columnWidth + 2 };
     }
 
-    for (let R = range.s.r; R <= range.e.r; R++) {
-      for (let C = range.s.c; C <= range.e.c; C++) {
-        const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
-        const cell = worksheet[cellRef];
-        if (cell) {
-          cell.s = {
-            alignment: { horizontal: "center", vertical: "center" },
-          };
-        }
-      }
-    }
-
     Object.keys(worksheet).forEach((key) => {
-      if (key.startsWith("!")) return;
-      const row = parseInt(key.match(/\d+/)[0], 10);
-      if (row === 1) {
-        worksheet[key].v = worksheet[key].v.toUpperCase().replace(/_/g, " ");
+      if (!key.startsWith("!")) {
+        const row = parseInt(key.match(/\d+/)[0], 10);
+        if (row === 1) {
+          worksheet[key].v = worksheet[key].v.toUpperCase().replace(/_/g, " ");
+        }
       }
     });
 
     const date = new Date();
     const fileName = `export_${date.getHours()}_${date.getMinutes()}_${date.getSeconds()}.xlsx`;
     XLSX.writeFile(workbook, fileName);
-
     setExporting(false);
   };
 
@@ -134,9 +176,9 @@ const Chat = () => {
             key={idx}
             text={msg.text}
             isUser={msg.isUser}
-            onCopy={() => copyToClipboard(msg.originalMessage)}
+            onCopy={() => copyToClipboard(msg.text)}
             onExport={() => exportToExcel(msg.responseSQL)}
-            onRefresh={() => handleRefresh(msg.prompt)} // Usar el prompt almacenado
+            onRefresh={() => fetchApiData(msg.onRefresh)}
           />
         ))}
         <div ref={messagesEndRef} />
