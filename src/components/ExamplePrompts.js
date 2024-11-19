@@ -6,17 +6,13 @@ const prompts = [
     prompt: "¿Cuántos empleados habilitados hay?",
   },
   {
-    label: "Fecha de habilitación",
-    prompt: "¿En qué fecha fue habilitado el empleado?",
-  },
-  {
-    label: "Empleados no habilitados",
+    label: "Empleados inhabilitados",
     prompt:
-      "Necesito un detalle de los empleados que para un periodo no fueron habilitados, indicando nombre, RUT y documentos pendientes de habilitación.",
+      "Necesito un detalle de los empleados que los ultimos 6 meses no fueron habilitados.",
   },
   {
     label: "Empresas habilitadas",
-    prompt: "¿Cuántas empresas habilitadas existen en el grupo?",
+    prompt: "¿Cuántas empresas habilitadas existen en Argentina?",
   },
   {
     label: "Altas de AFIP",
@@ -25,68 +21,35 @@ const prompts = [
   {
     label: "Promedio de empleados habilitados",
     prompt:
-      "¿Cuál es el promedio de empleados habilitados mensualmente en los últimos 12 meses?",
+      "¿Cuál es el promedio de empleados habilitados mensualmente en los últimos 6 meses?",
   },
   {
     label: "Documentos aprobados",
     prompt:
-      "¿Cuáles y cuántos fueron los documentos más aprobados en los últimos 3 meses?",
+      "¿Cuáles y cuántos fueron los documentos más aprobados en los últimos 6 meses?",
   },
   {
     label: "Documentos rechazados",
     prompt:
-      "¿Cuáles y cuántos fueron los documentos más rechazados en los últimos 3 meses?",
+      "¿Cuáles y cuántos fueron los documentos más rechazados en los últimos 6 meses?",
   },
   {
-    label: "Empresas en Argentina",
+    label: "Empresas modo Integral",
     prompt:
-      "¿Cuántas empresas están habilitadas en Argentina para el tipo de servicio integral?",
+      "¿Cuántas empresas están habilitadas para el tipo de servicio Integral?",
+  },
+  {
+    label: "Empresas modo Renting",
+    prompt:
+      "¿Cuántas empresas están habilitadas para el tipo de servicio Renting?",
   },
   {
     label: "CUIT de empresas",
     prompt: "Quiero un detalle del CUIT de todas las empresas en Argentina.",
   },
   {
-    label: "Rubros de empresas",
-    prompt:
-      "Quiero conocer los principales rubros de las empresas que contratan el servicio integral con las respectivas cantidades.",
-  },
-  {
-    label: "Apoderado firmante",
-    prompt:
-      "¿Cuál es el nombre del apoderado firmante en los últimos contratos cargados y cuál es la vigencia del poder o personería que se invoca?",
-  },
-  {
-    label: "Convenio de trabajo",
-    prompt: "¿Qué convenio de trabajo aplica a los empleados?",
-  },
-  {
-    label: "Categorías de empleados",
-    prompt: "¿Cuáles son las principales categorías de los empleados?",
-  },
-  {
-    label: "Empleados nocturnos",
-    prompt:
-      "¿Cuántos y quiénes son los empleados que realizan horario nocturno?",
-  },
-  {
-    label: "Antigüedad del empleado",
-    prompt: "¿Cuál es la antigüedad del empleado?",
-  },
-  {
-    label: "Ubicaciones físicas",
-    prompt:
-      "Quiero conocer en detalle las ubicaciones físicas de los empleados que ingresaron durante el último año para cumplir sus tareas.",
-  },
-  {
-    label: "Categoría más contratada",
-    prompt:
-      "¿Qué categoría de empleados fue la que más se contrató en el último año?",
-  },
-  {
-    label: "Contratos próximos a vencer",
-    prompt:
-      "Quiero saber cuántos contratos a tiempo determinado se encuentran próximos a vencer en los próximos dos meses.",
+    label: "Empleado más Antigüo",
+    prompt: "¿Cuál es el empleado más antigüo?",
   },
 ];
 
@@ -107,7 +70,7 @@ const ExamplePrompts = ({ onPromptClick }) => {
         setCurrentPrompts(getRandomPrompts());
         setIsAnimating(false);
       }, 500);
-    }, 7000);
+    }, 5000);
 
     return () => clearInterval(intervalId);
   }, []);
