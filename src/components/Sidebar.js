@@ -18,9 +18,8 @@ const Sidebar = ({
       const response = await fetch(
         "http://localhost:5000/chat/obtener-chats/1"
       );
-      if (!response.ok) throw new Error("Error al obtener los chats");
-
       const data = await response.json();
+      // console.log(data);
       setChats(data);
     } catch (error) {
       console.error("Error:", error);
@@ -28,6 +27,7 @@ const Sidebar = ({
   }, []);
 
   const handleChatClick = (id_chat) => {
+    console.log(id_chat);
     if (onSelectChat) onSelectChat(id_chat);
     setIsOpen(false);
   };

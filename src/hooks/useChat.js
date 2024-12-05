@@ -20,7 +20,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats) => {
   };
 
   useEffect(() => {
-    if (selectedChatId === null) return resetChat();
+    if (!selectedChatId) return resetChat();
     setIdChat(selectedChatId);
     fetchChatHistory(selectedChatId);
   }, [selectedChatId]);
@@ -32,6 +32,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats) => {
   };
 
   const fetchChatHistory = useCallback(async (id_chat) => {
+   // console.log(id_chat);
     setLoading(true);
     setInputDisabled(true);
     setShowPrompts(false);
@@ -41,10 +42,11 @@ const useChat = (selectedChatId, onNewChat, refreshChats) => {
         `http://localhost:5000/chat/obtener-chat/${id_chat}`
       );
       const data = await response.json();
-      setMessages(formatMessages(data[0].history));
+     // console.log(data);
+      setMessages(formatMessages(data));
     } catch {
-      alert("Error al cargar el historial.");
-      resetChat();
+      // alert("Error al cargar el historial.");
+      // resetChat();
     } finally {
       setLoading(false);
       setInputDisabled(false);
@@ -54,7 +56,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats) => {
   const formatMessages = (history) =>
     history.map((item) => ({
       text: formatMessageText(item.content),
-      isUser: item.role === "user",
+      isUser: item.sender === "user",
       responseSQL: item.responseSQL || null,
       onRefresh: item.onRefresh,
     }));
@@ -71,8 +73,9 @@ const useChat = (selectedChatId, onNewChat, refreshChats) => {
     setShowPrompts(false);
 
     try {
+      //console.log(idChat);
       const response = await sendApiRequest(finalPrompt);
-      console.log(response);
+     console.log(response);
       handleApiResponse(response);
     } catch {
       addMessage(
@@ -89,10 +92,12 @@ const useChat = (selectedChatId, onNewChat, refreshChats) => {
   };
 
   const sendApiRequest = async (prompt) => {
+    const body = { prompt, id_user: 1, id_chat: idChat, id_empresas: '5c339fb6-b458-11ec-9c2c-0e00717ac761'};
+   // console.log(body);
     const response = await fetch("http://localhost:5000/chat/enviar-mensaje", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt, id_user: 1, id_chat: idChat }),
+      body: JSON.stringify(body),
     });
     return response.json();
   };
@@ -105,7 +110,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats) => {
     }
 
     if (data.history) {
-      setMessages(formatMessages(data.history));
+      setMessages(formatMessages(data.history.filter(m => m.visible)));
     } else {
       alert("Error al cargar el historial.");
       resetChat();

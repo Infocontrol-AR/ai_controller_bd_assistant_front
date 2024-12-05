@@ -21,7 +21,7 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats }) => {
     handleQuote,
     handleError,
     logo,
-    copyToClipboard
+    copyToClipboard,
   } = useChat(selectedChatId, onNewChat, refreshChats);
 
   return (
