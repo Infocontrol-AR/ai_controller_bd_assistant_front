@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const Input = ({ onSend, loading, inputRef, disabled, quotedText }) => {
+const Input = ({ onSend, loading, inputRef, disabled, quotedText, onNewChat}) => {
   const [input, setInput] = useState("");
   const [showQuoteContainer, setShowQuoteContainer] = useState(false);
 
@@ -56,10 +56,13 @@ const Input = ({ onSend, loading, inputRef, disabled, quotedText }) => {
       )}
       <div className="d-flex align-items-center">
         {/* Botón Nuevo Chat */}
-        <button className="btn btn-secondary me-2 circle-btn d-flex align-items-center">
-  <i className="bi bi-plus-circle-fill"></i>
-  <span className="ms-2">Nuevo Chat</span>
-</button>
+        <button
+          className="btn btn-secondary me-2 circle-btn d-flex align-items-center"
+          onClick={onNewChat}
+        >
+          <i className="bi bi-plus-circle-fill"></i>
+          <span className="ms-2">Nuevo Chat</span>
+        </button>
 
         {/* Botón Micrófono */}
         <button className="btn btn-secondary me-2">

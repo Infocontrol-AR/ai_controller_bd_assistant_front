@@ -200,6 +200,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
     handleQuote,
     logo,
     copyToClipboard,
+    resetChat
   };
 };
 

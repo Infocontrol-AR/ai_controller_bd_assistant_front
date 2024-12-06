@@ -21,6 +21,7 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats, logo }) => {
     handleQuote,
     handleError,
     copyToClipboard,
+    resetChat
   } = useChat(selectedChatId, onNewChat, refreshChats, logo);
 
   return (
@@ -52,6 +53,7 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats, logo }) => {
         inputRef={inputRef}
         disabled={inputDisabled}
         quotedText={quotedText}
+        onNewChat={resetChat}
       />
     </div>
   );
