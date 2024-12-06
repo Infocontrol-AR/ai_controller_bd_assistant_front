@@ -8,7 +8,7 @@ const prompts = [
   {
     label: "Empleados inhabilitados",
     prompt:
-      "Necesito un detalle de los empleados que los ultimos 6 meses no fueron habilitados.",
+      "Necesito un detalle de los empleados que los últimos 6 meses no fueron habilitados.",
   },
   {
     label: "Empresas habilitadas",
@@ -57,9 +57,21 @@ const ExamplePrompts = ({ onPromptClick }) => {
   const [currentPrompts, setCurrentPrompts] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
 
+  const icons = [
+    "bi-lightbulb",
+    "bi-person",
+    "bi-briefcase",
+    "bi-clipboard",
+    "bi-building",
+  ];
+
   const getRandomPrompts = () => {
     const shuffled = prompts.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, 3);
+  };
+
+  const getRandomIcon = () => {
+    return icons[Math.floor(Math.random() * icons.length)];
   };
 
   useEffect(() => {
@@ -70,26 +82,30 @@ const ExamplePrompts = ({ onPromptClick }) => {
         setCurrentPrompts(getRandomPrompts());
         setIsAnimating(false);
       }, 500);
-    }, 5000);
+    }, 10000);
 
     return () => clearInterval(intervalId);
   }, []);
 
   return (
     <div
-      className={`example-prompts d-flex justify-content-between mt-3 ${
+      className={`example-prompts d-flex justify-content-around mt-3 ${
         isAnimating ? "fade" : ""
       }`}
     >
       {currentPrompts.map((item, idx) => (
-        <button
+        <div
           key={idx}
-          className="btn btn-outline-secondary btn-sm d-flex align-items-center"
+          className="text-center itemP"
           onClick={() => onPromptClick(item.prompt)}
         >
-          <i className="bi bi-lightbulb me-2"></i>
-          {item.label}
-        </button>
+          <i
+            className={`bi ${getRandomIcon()} mb-2`}
+            style={{ fontSize: "30px", color: "#007bff" }}
+          ></i>
+          <h6 style={{ color: "#007bff", fontWeight: "bold" }}>{item.label}</h6>
+          <p className="text-muted">{item.prompt}</p>
+        </div>
       ))}
     </div>
   );

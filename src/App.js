@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Chat from './components/Chat';
 import Sidebar from './components/Sidebar';
+import logo from "./infocontrol.png";
 
 const App = () => {
   const [selectedChatId, setSelectedChatId] = useState(null);
@@ -28,6 +29,7 @@ const App = () => {
         refreshTrigger={refreshTrigger}
         selectedChatId={selectedChatId}
         setShowModal={setShowModal} 
+        logo={logo}
       />
       <Chat
         selectedChatId={selectedChatId}
@@ -35,6 +37,7 @@ const App = () => {
         refreshChats={triggerSidebarRefresh}
         showModal={showModal} 
         setShowModal={setShowModal}
+        logo={logo}
       />
     </div>
   );

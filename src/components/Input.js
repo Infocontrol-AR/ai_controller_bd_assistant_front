@@ -20,7 +20,7 @@ const Input = ({ onSend, loading, inputRef, disabled, quotedText }) => {
       }
       onSend(input);
       setInput("");
-      setShowQuoteContainer(false); 
+      setShowQuoteContainer(false);
     }
   };
 
@@ -54,10 +54,24 @@ const Input = ({ onSend, loading, inputRef, disabled, quotedText }) => {
           </button>
         </div>
       )}
-      <div className="d-flex">
+      <div className="d-flex align-items-center">
+        {/* Botón Nuevo Chat */}
+        <button className="btn btn-secondary me-2 circle-btn d-flex align-items-center">
+  <i className="bi bi-plus-circle-fill"></i>
+  <span className="ms-2">Nuevo Chat</span>
+</button>
+
+        {/* Botón Micrófono */}
+        <button className="btn btn-secondary me-2">
+          <i className="bi bi-mic"></i>
+        </button>
+
+        {/* Botón Clip */}
         <button className="btn btn-secondary me-2">
           <i className="bi bi-paperclip"></i>
         </button>
+
+        {/* Input de texto */}
         <textarea
           ref={inputRef}
           value={input}
@@ -69,6 +83,8 @@ const Input = ({ onSend, loading, inputRef, disabled, quotedText }) => {
           style={{ resize: "none" }}
           disabled={disabled}
         />
+
+        {/* Botón Enviar */}
         <button
           onClick={handleSend}
           className="btn btn-primary"

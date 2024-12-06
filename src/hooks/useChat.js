@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import * as XLSX from "xlsx";
-import logo from "../infocontrol.png";
 
-const useChat = (selectedChatId, onNewChat, refreshChats) => {
+const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);

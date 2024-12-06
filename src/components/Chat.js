@@ -5,7 +5,7 @@ import Message from "./Message";
 import ExamplePrompts from "./ExamplePrompts";
 import useChat from "../hooks/useChat";
 
-const Chat = ({ selectedChatId, onNewChat, refreshChats }) => {
+const Chat = ({ selectedChatId, onNewChat, refreshChats, logo }) => {
   const {
     messages,
     loading,
@@ -20,9 +20,8 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats }) => {
     exportToExcel,
     handleQuote,
     handleError,
-    logo,
     copyToClipboard,
-  } = useChat(selectedChatId, onNewChat, refreshChats);
+  } = useChat(selectedChatId, onNewChat, refreshChats, logo);
 
   return (
     <div className="chat">
@@ -31,6 +30,8 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats }) => {
         alt="Logo"
         className={`logo ${messages.length ? "small-logo" : ""}`}
       />
+      {showPrompts && <ExamplePrompts onPromptClick={fetchApiData} />}
+
       <div className="messages">
         {messages.map((msg, idx) => (
           <Message
@@ -52,7 +53,6 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats }) => {
         disabled={inputDisabled}
         quotedText={quotedText}
       />
-      {showPrompts && <ExamplePrompts onPromptClick={fetchApiData} />}
     </div>
   );
 };
