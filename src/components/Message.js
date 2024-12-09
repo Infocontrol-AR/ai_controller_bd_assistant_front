@@ -2,7 +2,15 @@ import React, { useEffect, useState } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import PropTypes from "prop-types";
 
-const Message = ({ text, isUser, onCopy, onExport, onRefresh, onQuote }) => {
+const Message = ({
+  text,
+  isUser,
+  onCopy,
+  onExport,
+  onRefresh,
+  onQuote,
+  created_at,
+}) => {
   const [selectedText, setSelectedText] = useState("");
   const [showQuoteIcon, setShowQuoteIcon] = useState(false);
   const [iconPosition, setIconPosition] = useState({ top: 0, left: 0 });
@@ -46,7 +54,7 @@ const Message = ({ text, isUser, onCopy, onExport, onRefresh, onQuote }) => {
     return () => {
       document.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("click", handleClickOutside);
-      setSelectedText(""); 
+      setSelectedText("");
     };
   }, []);
 
@@ -71,18 +79,61 @@ const Message = ({ text, isUser, onCopy, onExport, onRefresh, onQuote }) => {
           aria-label="Quote selected text"
         />
       )}
-      <div className="message-actions">
+      <div
+        className="message-actions"
+        style={{
+          display: "flex",
+          justifyContent: !isUser ? "space-between" : "flex-end",
+          marginTop: "10px",
+          position: "relative",
+        }}
+      >
+        <div
+          className="datetime"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            color: "#bdbdbd",
+          }}
+        >
+          <span
+            dangerouslySetInnerHTML={{
+              __html: new Date(created_at).toLocaleTimeString("es-AR", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              }),
+            }}
+          />
+        </div>
+
         {!isUser && (
           <>
-            <button onClick={onRefresh}>
-              <i className="bi bi-arrow-clockwise" aria-label="refresh"></i>
-            </button>
-            <button onClick={onCopy}>
-              <i className="bi bi-clipboard" aria-label="copy"></i>
-            </button>
-            <button onClick={onExport}>
-              <i className="bi bi-download" aria-label="export"></i>
-            </button>
+            <div
+              className="actions-btn"
+              style={{
+                display: "flex",
+                gap: "5px",
+                display: "flex",
+                gap: "5px",
+                backgroundColor: "#007bff",
+                borderRadius: "5px",
+                padding: "2px",
+                position: "absolute",
+                right: "0",
+                bottom: "-25px",
+              }}
+            >
+              <button onClick={onRefresh}>
+                <i className="bi bi-arrow-clockwise" aria-label="refresh"></i>
+              </button>
+              <button onClick={onCopy}>
+                <i className="bi bi-clipboard" aria-label="copy"></i>
+              </button>
+              <button onClick={onExport}>
+                <i className="bi bi-download" aria-label="export"></i>
+              </button>
+            </div>
           </>
         )}
       </div>
@@ -97,6 +148,7 @@ Message.propTypes = {
   onExport: PropTypes.func.isRequired,
   onRefresh: PropTypes.func.isRequired,
   onQuote: PropTypes.func.isRequired,
+  created_at: PropTypes.func.isRequired,
 };
 
 export default Message;

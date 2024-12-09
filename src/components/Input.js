@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 
-const Input = ({ onSend, loading, inputRef, disabled, quotedText, onNewChat}) => {
+const Input = ({
+  onSend,
+  loading,
+  inputRef,
+  disabled,
+  quotedText,
+  onNewChat,
+}) => {
   const [input, setInput] = useState("");
   const [showQuoteContainer, setShowQuoteContainer] = useState(false);
 
@@ -65,12 +72,18 @@ const Input = ({ onSend, loading, inputRef, disabled, quotedText, onNewChat}) =>
         </button>
 
         {/* Botón Micrófono */}
-        <button className="btn btn-secondary me-2">
+        <button
+          className="btn btn-secondary me-2"
+          style={{ borderRadius: "45%" }}
+        >
           <i className="bi bi-mic"></i>
         </button>
 
         {/* Botón Clip */}
-        <button className="btn btn-secondary me-2">
+        <button
+          className="btn btn-secondary me-2"
+          style={{ borderRadius: "45%" }}
+        >
           <i className="bi bi-paperclip"></i>
         </button>
 
@@ -92,6 +105,7 @@ const Input = ({ onSend, loading, inputRef, disabled, quotedText, onNewChat}) =>
           onClick={handleSend}
           className="btn btn-primary"
           disabled={loading}
+          style={{ borderRadius: "45%" }}
         >
           {loading ? (
             <span

@@ -41,7 +41,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
         `http://localhost:5000/chat/obtener-chat/${id_chat}`
       );
       const data = await response.json();
-     // console.log(data);
+      console.log(data);
       setMessages(formatMessages(data));
     } catch {
       // alert("Error al cargar el historial.");
@@ -58,6 +58,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
       isUser: item.sender === "user",
       responseSQL: item.responseSQL || null,
       onRefresh: item.onRefresh,
+      created_at: item.created_at
     }));
 
   const fetchApiData = async (prompt) => {

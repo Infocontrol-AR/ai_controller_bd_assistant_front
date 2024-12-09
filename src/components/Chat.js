@@ -39,6 +39,7 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats, logo }) => {
             key={idx}
             text={msg.text}
             isUser={msg.isUser}
+            created_at ={msg.created_at}
             onCopy={() => copyToClipboard(msg.text)}
             onExport={() => exportToExcel(msg.responseSQL)}
             onRefresh={() => fetchApiData(msg.onRefresh)}

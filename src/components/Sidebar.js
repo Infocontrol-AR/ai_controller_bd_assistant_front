@@ -15,7 +15,7 @@ const Sidebar = ({
   const [isArchived, setIsArchived] = useState(false);
 
   const searchInputRef = useRef(null);
-  const menuRef = useRef(null); // Referencia al menú contextual
+  const menuRef = useRef(null); 
 
   const toggleSidebar = () => {
     setIsOpen((prev) => !prev);
@@ -33,6 +33,7 @@ const Sidebar = ({
         "http://localhost:5000/chat/obtener-chats/1"
       );
       const data = await response.json();
+      console.log(data);
       setChats(data);
     } catch (error) {
       console.error("Error:", error);

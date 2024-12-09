@@ -261,11 +261,12 @@ textarea::-webkit-scrollbar {
 }
 
 .message-actions button {
-  background: rgba(255, 255, 255, 0.7); /* Fondo semitransparente */
+  background: transparent;
   border: none;
   cursor: pointer;
-  border-radius: 5px; /* Bordes redondeados */
-  padding: 5px 10px; /* Espaciado interno */
+  border-radius: 5px;
+  padding: 3px;
+  color: white;
 }
 
 /* SIDEBAR */
