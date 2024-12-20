@@ -9,8 +9,18 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
   const [showPrompts, setShowPrompts] = useState(true);
   const [idChat, setIdChat] = useState(selectedChatId || null);
   const [quotedText, setQuotedText] = useState("");
+  const [fileData, setFileData] = useState(null);
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
+
+  const setFile = (fileObject) => {
+   //(fileObject);
+    if (!fileObject || !fileObject.name || !fileObject.content) {
+      alert("El archivo no es válido. Intente nuevamente.");
+      return;
+    }
+    setFileData(fileObject);
+  };
 
   const copyToClipboard = (text) => {
     navigator.clipboard
@@ -28,10 +38,11 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
     setMessages([]);
     setIdChat(null);
     setShowPrompts(true);
+    setFileData(null);
   };
 
   const fetchChatHistory = useCallback(async (id_chat) => {
-   // console.log(id_chat);
+    ////(id_chat);
     setLoading(true);
     setInputDisabled(true);
     setShowPrompts(false);
@@ -41,7 +52,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
         `http://localhost:5000/chat/obtener-chat/${id_chat}`
       );
       const data = await response.json();
-    //console.log(data);
+      //console.log(data);
       setMessages(formatMessages(data));
     } catch {
       // alert("Error al cargar el historial.");
@@ -58,7 +69,8 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
       isUser: item.sender === "user",
       responseSQL: item.responseSQL || null,
       onRefresh: item.onRefresh,
-      created_at: item.created_at
+      created_at: item.created_at,
+      files: item.files,
     }));
 
   const fetchApiData = async (prompt) => {
@@ -67,15 +79,15 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
     const finalPrompt = quotedText
       ? `En relación a este contexto: \n \n **${quotedText}** \n \n ${prompt}`
       : prompt;
-    addMessage(finalPrompt, true);
+    addMessage(prompt, true);
     setLoading(true);
     setInputDisabled(true);
     setShowPrompts(false);
 
     try {
       //console.log(idChat);
-      const response = await sendApiRequest(finalPrompt);
-   //console.log(response);
+      const response = await sendApiRequest(finalPrompt, fileData);
+     //(response);
       handleApiResponse(response);
     } catch {
       addMessage(
@@ -91,9 +103,20 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
     }
   };
 
-  const sendApiRequest = async (prompt) => {
-    const body = { prompt, id_user: 1, id_chat: idChat, id_empresas: '5c339fb6-b458-11ec-9c2c-0e00717ac761'};
-   // console.log(body);
+  const sendApiRequest = async (prompt, files = null) => {
+    const body = {
+      prompt,
+      id_user: 1,
+      id_chat: idChat,
+      id_empresas: "5c339fb6-b458-11ec-9c2c-0e00717ac761",
+      documents: [files],
+    };
+
+    if (!files) {
+      body.documents = null;
+    }
+
+   //(body);
     const response = await fetch("http://localhost:5000/chat/enviar-mensaje", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -110,14 +133,21 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
     }
 
     if (data.history) {
-      setMessages(formatMessages(data.history.filter(m => m.visible)));
+      setMessages(formatMessages(data.history.filter((m) => m.visible)));
     } else {
       alert("Error al cargar el historial.");
       resetChat();
     }
   };
 
-  const addMessage = (message, isUser = true, OnRefreshError = null) => {
+  const addMessage = (
+    message,
+    isUser = true,
+    OnRefreshError = null,
+  ) => {
+
+    console.log(message, fileData);
+
     if (!message) return;
 
     if (OnRefreshError) {
@@ -128,7 +158,11 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
     } else {
       setMessages((prev) => [
         ...prev,
-        { text: formatMessageText(message), isUser },
+        {
+          text: formatMessageText(message),
+          isUser,
+          ...(fileData && { files: [fileData] }),
+        },
       ]);
     }
   };
@@ -201,7 +235,8 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
     handleQuote,
     logo,
     copyToClipboard,
-    resetChat
+    resetChat,
+    setFile,
   };
 };
 

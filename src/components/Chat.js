@@ -21,7 +21,8 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats, logo }) => {
     handleQuote,
     handleError,
     copyToClipboard,
-    resetChat
+    resetChat,
+    setFile
   } = useChat(selectedChatId, onNewChat, refreshChats, logo);
 
   return (
@@ -39,17 +40,19 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats, logo }) => {
             key={idx}
             text={msg.text}
             isUser={msg.isUser}
-            created_at ={msg.created_at}
+            created_at={msg.created_at}
             onCopy={() => copyToClipboard(msg.text)}
             onExport={() => exportToExcel(msg.responseSQL)}
             onRefresh={() => fetchApiData(msg.onRefresh)}
             onQuote={handleQuote}
+            files={msg.files}
           />
         ))}
         <div ref={messagesEndRef} />
       </div>
       <Input
-        onSend={fetchApiData}
+        onSend={(prompt) => fetchApiData(prompt, null)}
+        onSendFile={setFile}
         loading={loading}
         inputRef={inputRef}
         disabled={inputDisabled}

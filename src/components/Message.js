@@ -10,6 +10,7 @@ const Message = ({
   onRefresh,
   onQuote,
   created_at,
+  files,
 }) => {
   const [selectedText, setSelectedText] = useState("");
   const [showQuoteIcon, setShowQuoteIcon] = useState(false);
@@ -58,8 +59,17 @@ const Message = ({
     };
   }, []);
 
+ //(files);
+
   return (
     <div className={`message ${isUser ? "user" : "bot"}`}>
+      {files && files.length > 0 && (
+        <>
+          <span style={{ color: "gray" }}>{files[0].name}</span>
+          <hr />
+        </>
+      )}
+
       <span dangerouslySetInnerHTML={{ __html: text }} />
       {showQuoteIcon && (
         <i
@@ -98,11 +108,14 @@ const Message = ({
         >
           <span
             dangerouslySetInnerHTML={{
-              __html: new Date(created_at).toLocaleTimeString("es-AR", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              }),
+              __html: new Date(created_at || Date.now()).toLocaleTimeString(
+                "es-AR",
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                }
+              ),
             }}
           />
         </div>
@@ -112,8 +125,6 @@ const Message = ({
             <div
               className="actions-btn"
               style={{
-                display: "flex",
-                gap: "5px",
                 display: "flex",
                 gap: "5px",
                 backgroundColor: "#007bff",
@@ -139,16 +150,6 @@ const Message = ({
       </div>
     </div>
   );
-};
-
-Message.propTypes = {
-  text: PropTypes.string.isRequired,
-  isUser: PropTypes.bool.isRequired,
-  onCopy: PropTypes.func.isRequired,
-  onExport: PropTypes.func.isRequired,
-  onRefresh: PropTypes.func.isRequired,
-  onQuote: PropTypes.func.isRequired,
-  created_at: PropTypes.func.isRequired,
 };
 
 export default Message;
