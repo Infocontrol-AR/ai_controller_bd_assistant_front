@@ -5,7 +5,7 @@ import Message from "./Message";
 import ExamplePrompts from "./ExamplePrompts";
 import useChat from "../hooks/useChat";
 
-const Chat = ({ selectedChatId, onNewChat, refreshChats, logo }) => {
+const Chat = ({ selectedChatId, onNewChat, refreshChats, logo, textGif }) => {
   const {
     messages,
     loading,
@@ -22,8 +22,8 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats, logo }) => {
     handleError,
     copyToClipboard,
     resetChat,
-    setFile
-  } = useChat(selectedChatId, onNewChat, refreshChats, logo);
+    setFile,
+  } = useChat(selectedChatId, onNewChat, refreshChats, logo, textGif);
 
   return (
     <div className="chat">
@@ -37,6 +37,7 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats, logo }) => {
       <div className="messages">
         {messages.map((msg, idx) => (
           <Message
+            preloader={msg.preloader}
             key={idx}
             text={msg.text}
             isUser={msg.isUser}

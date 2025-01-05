@@ -92,7 +92,6 @@ body {
   padding: 10px 12px;
   border-radius: 8px;
   background: hsl(240, 11%, 91%);
-  max-width: 50%;
   word-wrap: break-word;
   font-size: 12px;
 }

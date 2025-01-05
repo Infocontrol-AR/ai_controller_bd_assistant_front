@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import * as XLSX from "xlsx";
+import Swal from "sweetalert2";
 
-const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
+const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -14,18 +15,28 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
   const messagesEndRef = useRef(null);
 
   const setFile = (fileObject) => {
-   //(fileObject);
+    //(fileObject);
     if (!fileObject || !fileObject.name || !fileObject.content) {
-      alert("El archivo no es válido. Intente nuevamente.");
+      Swal.fire({
+        title: "Advertencia",
+        text: "Documento no valido!",
+        icon: "warning",
+        confirmButtonText: "Aceptar",
+      });
       return;
     }
     setFileData(fileObject);
   };
 
   const copyToClipboard = (text) => {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => alert("Texto copiado al portapapeles"));
+    navigator.clipboard.writeText(text).then(() =>
+      Swal.fire({
+        title: "Exito",
+        text: "Texto Copiado al portapapeles!",
+        icon: "success",
+        confirmButtonText: "Aceptar",
+      })
+    );
   };
 
   useEffect(() => {
@@ -42,8 +53,6 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
   };
 
   const fetchChatHistory = useCallback(async (id_chat) => {
-    ////(id_chat);
-    setLoading(true);
     setInputDisabled(true);
     setShowPrompts(false);
 
@@ -52,14 +61,20 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
         `http://localhost:5000/chat/obtener-chat/${id_chat}`
       );
       const data = await response.json();
-      //console.log(data);
+      console.log(data);
       setMessages(formatMessages(data));
     } catch {
-      // alert("Error al cargar el historial.");
-      // resetChat();
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo cargar el historial. Por favor, inténtalo nuevamente.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+      resetChat();
     } finally {
       setLoading(false);
       setInputDisabled(false);
+      setFileData(null);
     }
   }, []);
 
@@ -74,12 +89,27 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
     }));
 
   const fetchApiData = async (prompt) => {
-    if (!prompt) return alert("No se puede enviar un Mensaje Vacio");
+    if (!prompt) {
+      Swal.fire({
+        title: "Advertencia",
+        text: "No se puede enviar una consulta vacia",
+        icon: "warning",
+        confirmButtonText: "Aceptar",
+      });
+      return;
+    }
 
     const finalPrompt = quotedText
-      ? `En relación a este contexto: \n \n **${quotedText}** \n \n ${prompt}`
+      ? `En relación a este contexto: \n \n ** ${quotedText} ** \n \n ${prompt}`
       : prompt;
-    addMessage(prompt, true);
+    addMessage(finalPrompt, true);
+    addMessage(
+      `<img src=${textGif} alt="Descripción de la imagen" width="25">`,
+      false,
+      null,
+      true
+    );
+
     setLoading(true);
     setInputDisabled(true);
     setShowPrompts(false);
@@ -87,7 +117,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
     try {
       //console.log(idChat);
       const response = await sendApiRequest(finalPrompt, fileData);
-     //(response);
+      console.log(response);
       handleApiResponse(response);
     } catch {
       addMessage(
@@ -96,6 +126,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
         finalPrompt
       );
     } finally {
+      setFileData(null);
       setLoading(false);
       setInputDisabled(false);
       inputRef.current?.focus();
@@ -116,7 +147,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
       body.documents = null;
     }
 
-   //(body);
+    //(body);
     const response = await fetch("http://localhost:5000/chat/enviar-mensaje", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -134,8 +165,14 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
 
     if (data.history) {
       setMessages(formatMessages(data.history.filter((m) => m.visible)));
-    } else {
-      alert("Error al cargar el historial.");
+    } 
+    else {
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo cargar el historial. Por favor, inténtalo nuevamente.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
       resetChat();
     }
   };
@@ -144,8 +181,8 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
     message,
     isUser = true,
     OnRefreshError = null,
+    preloader = false
   ) => {
-
     console.log(message, fileData);
 
     if (!message) return;
@@ -153,13 +190,19 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
     if (OnRefreshError) {
       setMessages((prev) => [
         ...prev,
-        { text: formatMessageText(OnRefreshError), isUser: true, error: true },
+        {
+          text: formatMessageText(message),
+          isUser: false,
+          error: true,
+          onRefresh: formatMessageText(OnRefreshError),
+        },
       ]);
     } else {
       setMessages((prev) => [
         ...prev,
         {
-          text: formatMessageText(message),
+          preloader,
+          text: isUser ? formatMessageText(message) : message,
           isUser,
           ...(fileData && { files: [fileData] }),
         },
@@ -175,7 +218,12 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo) => {
 
   const exportToExcel = async (responseSQL) => {
     if (!Array.isArray(responseSQL) || responseSQL.length === 0)
-      return alert("No se puede exportar un elemento vacío.");
+      return Swal.fire({
+        title: "Advertencia",
+        text: "No hay nada para exportar",
+        icon: "warning",
+        confirmButtonText: "Aceptar",
+      });
 
     setExporting(true);
     const worksheet = XLSX.utils.json_to_sheet(responseSQL);

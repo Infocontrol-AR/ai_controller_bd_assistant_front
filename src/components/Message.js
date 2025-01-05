@@ -3,6 +3,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import PropTypes from "prop-types";
 
 const Message = ({
+  preloader,
   text,
   isUser,
   onCopy,
@@ -59,10 +60,15 @@ const Message = ({
     };
   }, []);
 
- //(files);
+  //(files);
 
   return (
-    <div className={`message ${isUser ? "user" : "bot"}`}>
+    <div
+      className={`message ${isUser ? "user" : "bot"}`}
+      style={{
+        maxWidth: preloader ? "min-content" : "50%",
+      }}
+    >
       {files && files.length > 0 && (
         <>
           <span style={{ color: "gray" }}>{files[0].name}</span>
@@ -98,7 +104,8 @@ const Message = ({
           position: "relative",
         }}
       >
-        <div
+        {!preloader && (
+          <div
           className="datetime"
           style={{
             display: "flex",
@@ -119,8 +126,9 @@ const Message = ({
             }}
           />
         </div>
+        )}
 
-        {!isUser && (
+        {!isUser && !preloader && (
           <>
             <div
               className="actions-btn"
