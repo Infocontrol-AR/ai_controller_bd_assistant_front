@@ -22,7 +22,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
         text: "Documento no valido!",
         icon: "warning",
         confirmButtonText: "Aceptar",
-      });
+      }); 
       return;
     }
     setFileData(fileObject);
