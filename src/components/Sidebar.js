@@ -15,7 +15,7 @@ const Sidebar = ({
   const [isArchived, setIsArchived] = useState(false);
 
   const searchInputRef = useRef(null);
-  const menuRef = useRef(null); 
+  const menuRef = useRef(null);
 
   const toggleSidebar = () => {
     setIsOpen((prev) => !prev);
@@ -33,7 +33,7 @@ const Sidebar = ({
         "http://localhost:5000/chat/obtener-chats/1"
       );
       const data = await response.json();
-    //console.log(data);
+      console.log(data);
       setChats(data);
     } catch (error) {
       console.error("Error:", error);
@@ -140,6 +140,19 @@ const Sidebar = ({
     return isMatchingLabel && isArchivedMatch;
   });
 
+  const isToday = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
+  };
+
+  const recentChats = filteredChats.filter((chat) => isToday(chat.created_at));
+  const olderChats = filteredChats.filter((chat) => !isToday(chat.created_at));
+
   return (
     <div className={`sidebar ${isOpen ? "open" : ""}`}>
       <div className="button-container">
@@ -152,7 +165,7 @@ const Sidebar = ({
           aria-expanded={isOpen}
           aria-controls="sidebar-content"
         >
-          <i className="bi bi-list"></i>
+          <i className={`bi ${isOpen ? "bi-x" : "bi-list"}`}></i>
         </button>
       </div>
 
@@ -186,46 +199,102 @@ const Sidebar = ({
 
           <ul>
             {filteredChats.length === 0 ? (
-              <p className={"noChats"}>No hay chats disponibles</p>
+              <p className="noChats">No hay chats disponibles</p>
             ) : (
-              filteredChats.map((chat) => (
-                <li
-                  key={chat.id_chat}
-                  className={`chat-item ${
-                    selectedChatId === chat.id_chat ? "selected" : ""
-                  }`}
-                  onClick={() => handleChatClick(chat.id_chat)}
-                >
-                  {chat.label_chat}
-                  <i
-                    className="bi bi-three-dots"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleMenuClick(chat.id_chat);
-                    }}
-                  ></i>
-                  {menuVisible === chat.id_chat && (
-                    <div className="context-menu" ref={menuRef}>
-                      <button onClick={() => handleDeleteChat(chat.id_chat)}>
-                        <i className="bi bi-trash"></i> Eliminar
-                      </button>
-                      <hr style={{ margin: "0.5rem 0" }}></hr>
-                      <button
-                        onClick={() =>
-                          handleFiledChat(chat.id_chat, chat.status)
-                        }
+              <>
+                {recentChats.length > 0 && (
+                  <>
+                    <h5 style={{ paddingLeft: "10px" }}>Recientes</h5>
+                    {recentChats.map((chat) => (
+                      <li
+                        key={chat.id_chat}
+                        className={`chat-item ${
+                          selectedChatId === chat.id_chat ? "selected" : ""
+                        }`}
+                        onClick={() => handleChatClick(chat.id_chat)}
                       >
-                        <i className="bi bi-archive"></i>{" "}
-                        {chat.status === "activo" ? "Archivar" : "Desarchivar"}
-                      </button>
-                    </div>
-                  )}
-                </li>
-              ))
+                        {chat.label_chat}
+                        <i
+                          className="bi bi-three-dots"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMenuClick(chat.id_chat);
+                          }}
+                        ></i>
+                        {menuVisible === chat.id_chat && (
+                          <div className="context-menu" ref={menuRef}>
+                            <button
+                              onClick={() => handleDeleteChat(chat.id_chat)}
+                            >
+                              <i className="bi bi-trash"></i> Eliminar
+                            </button>
+                            <hr style={{ margin: "0.5rem 0" }} />
+                            <button
+                              onClick={() =>
+                                handleFiledChat(chat.id_chat, chat.status)
+                              }
+                            >
+                              <i className="bi bi-archive"></i>{" "}
+                              {chat.status === "activo"
+                                ? "Archivar"
+                                : "Desarchivar"}
+                            </button>
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </>
+                )}
+
+                {olderChats.length > 0 && (
+                  <>
+                    <h5>Anteriores</h5>
+                    {olderChats.map((chat) => (
+                      <li
+                        key={chat.id_chat}
+                        className={`chat-item ${
+                          selectedChatId === chat.id_chat ? "selected" : ""
+                        }`}
+                        onClick={() => handleChatClick(chat.id_chat)}
+                      >
+                        {chat.label_chat}
+                        <i
+                          className="bi bi-three-dots"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMenuClick(chat.id_chat);
+                          }}
+                        ></i>
+                        {menuVisible === chat.id_chat && (
+                          <div className="context-menu" ref={menuRef}>
+                            <button
+                              onClick={() => handleDeleteChat(chat.id_chat)}
+                            >
+                              <i className="bi bi-trash"></i> Eliminar
+                            </button>
+                            <hr style={{ margin: "0.5rem 0" }} />
+                            <button
+                              onClick={() =>
+                                handleFiledChat(chat.id_chat, chat.status)
+                              }
+                            >
+                              <i className="bi bi-archive"></i>{" "}
+                              {chat.status === "activo"
+                                ? "Archivar"
+                                : "Desarchivar"}
+                            </button>
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </>
+                )}
+              </>
             )}
           </ul>
         </div>
       )}
+
       <div className="bottom-buttons">
         <button className="mode-toggle">
           <i className="bi bi-moon"></i>
