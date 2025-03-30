@@ -23,6 +23,7 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats, logo, textGif }) => {
     copyToClipboard,
     resetChat,
     setFile,
+    graphExport,
   } = useChat(selectedChatId, onNewChat, refreshChats, logo, textGif);
 
   return (
@@ -45,6 +46,7 @@ const Chat = ({ selectedChatId, onNewChat, refreshChats, logo, textGif }) => {
             onCopy={() => copyToClipboard(msg.text)}
             onExport={() => exportToExcel(msg.responseSQL)}
             onRefresh={() => fetchApiData(msg.onRefresh)}
+            graphExport={() => graphExport(msg.graphExport, msg.responseSQL)}
             onQuote={handleQuote}
             files={msg.files}
           />

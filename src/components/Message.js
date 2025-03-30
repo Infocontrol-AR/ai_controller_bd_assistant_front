@@ -12,6 +12,7 @@ const Message = ({
   onQuote,
   created_at,
   files,
+  graphExport,
 }) => {
   const [selectedText, setSelectedText] = useState("");
   const [showQuoteIcon, setShowQuoteIcon] = useState(false);
@@ -106,26 +107,26 @@ const Message = ({
       >
         {!preloader && (
           <div
-          className="datetime"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            color: "#bdbdbd",
-          }}
-        >
-          <span
-            dangerouslySetInnerHTML={{
-              __html: new Date(created_at || Date.now()).toLocaleTimeString(
-                "es-AR",
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false,
-                }
-              ),
+            className="datetime"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              color: "#bdbdbd",
             }}
-          />
-        </div>
+          >
+            <span
+              dangerouslySetInnerHTML={{
+                __html: new Date(created_at || Date.now()).toLocaleTimeString(
+                  "es-AR",
+                  {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  }
+                ),
+              }}
+            />
+          </div>
         )}
 
         {!isUser && !preloader && (
@@ -151,6 +152,9 @@ const Message = ({
               </button>
               <button onClick={onExport}>
                 <i className="bi bi-download" aria-label="export"></i>
+              </button>
+              <button onClick={graphExport}>
+                <i class="bi bi-bar-chart"></i>
               </button>
             </div>
           </>

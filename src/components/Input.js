@@ -116,7 +116,7 @@ const Input = ({
         {/* Botón Nuevo Chat */}
         <button className="btn btn-secondary me-2 circle-btn d-flex align-items-center" onClick={onNewChat}>
           <i className="bi bi-plus-circle-fill"></i>
-          <span className="ms-2">Nuevo Chat</span>
+          <span className="ms-2">New Chat</span>
         </button>
 
         {/* Botón Micrófono */}
@@ -145,7 +145,7 @@ const Input = ({
           value={input}
           onChange={handleInputChange}
           onKeyPress={handleKeyPress}
-          placeholder="Escribe un mensaje..."
+          placeholder="Type a message..."
           className="form-control me-2"
           rows="1"
           style={{ resize: "none" }}

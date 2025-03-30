@@ -27,13 +27,28 @@ const Sidebar = ({
     }
   }, [isOpen]);
 
+  let demo = true;
+
+  const demoData = [
+    {
+        "id_chat": 1,
+        "label_chat": "Greeting & assistance 😊",
+        "status": "activo",
+        "created_at": "2025-03-27T08:52:02.103Z"
+    }
+];
+
   const fetchChats = useCallback(async () => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/chat/obtener-chats/1"
-      );
-      const data = await response.json();
-      console.log(data);
+      let data;
+      if (!demo) {
+        const response = await fetch(
+          "http://localhost:5000/chat/obtener-chats/1"
+        );
+        data = await response.json();
+      } else {
+        data = demoData;
+      }
       setChats(data);
     } catch (error) {
       console.error("Error:", error);
@@ -51,7 +66,7 @@ const Sidebar = ({
 
   const handleClickOutside = (event) => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
-      setMenuVisible(null); // Oculta el menú contextual
+      setMenuVisible(null); 
     }
   };
 
@@ -74,7 +89,7 @@ const Sidebar = ({
           method: "DELETE",
         }
       );
-      if (!response.ok) throw new Error("Error al eliminar el chat");
+      if (!response.ok) throw new Error("Error deleting chat");
 
       if (selectedChatId === id_chat) {
         if (onSelectChat) onSelectChat(null);
@@ -106,7 +121,7 @@ const Sidebar = ({
           body: JSON.stringify({ id_chat, status }),
         }
       );
-      if (!response.ok) throw new Error("Error al cambiar el estado del chat");
+      if (!response.ok) throw new Error("Error changing chat status");
 
       if (selectedChatId === id_chat) {
         if (onSelectChat) onSelectChat(null);
@@ -182,7 +197,7 @@ const Sidebar = ({
               className={`tab-btn ${isArchived ? "active" : ""}`}
               onClick={() => setIsArchived(true)}
             >
-              Archivados
+              Archived
             </button>
           </div>
 
@@ -190,7 +205,7 @@ const Sidebar = ({
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="Buscar chats..."
+              placeholder="Search chats..."
               value={searchTerm}
               onInput={(e) => setSearchTerm(e.target.value)}
             />
@@ -199,12 +214,12 @@ const Sidebar = ({
 
           <ul>
             {filteredChats.length === 0 ? (
-              <p className="noChats">No hay chats disponibles</p>
+              <p className="noChats">No chats available</p>
             ) : (
               <>
                 {recentChats.length > 0 && (
                   <>
-                    <h5 style={{ paddingLeft: "10px" }}>Recientes</h5>
+                    <h5 style={{ paddingLeft: "10px" }}>Recent</h5>
                     {recentChats.map((chat) => (
                       <li
                         key={chat.id_chat}
@@ -226,7 +241,7 @@ const Sidebar = ({
                             <button
                               onClick={() => handleDeleteChat(chat.id_chat)}
                             >
-                              <i className="bi bi-trash"></i> Eliminar
+                              <i className="bi bi-trash"></i> Delete
                             </button>
                             <hr style={{ margin: "0.5rem 0" }} />
                             <button
@@ -236,8 +251,8 @@ const Sidebar = ({
                             >
                               <i className="bi bi-archive"></i>{" "}
                               {chat.status === "activo"
-                                ? "Archivar"
-                                : "Desarchivar"}
+                                ? "Archive"
+                                : "Unarchive"}
                             </button>
                           </div>
                         )}
@@ -248,7 +263,7 @@ const Sidebar = ({
 
                 {olderChats.length > 0 && (
                   <>
-                    <h5>Anteriores</h5>
+                    <h5>Older</h5>
                     {olderChats.map((chat) => (
                       <li
                         key={chat.id_chat}
@@ -270,7 +285,7 @@ const Sidebar = ({
                             <button
                               onClick={() => handleDeleteChat(chat.id_chat)}
                             >
-                              <i className="bi bi-trash"></i> Eliminar
+                              <i className="bi bi-trash"></i> Delete
                             </button>
                             <hr style={{ margin: "0.5rem 0" }} />
                             <button
@@ -280,8 +295,8 @@ const Sidebar = ({
                             >
                               <i className="bi bi-archive"></i>{" "}
                               {chat.status === "activo"
-                                ? "Archivar"
-                                : "Desarchivar"}
+                                ? "Archive"
+                                : "Unarchive"}
                             </button>
                           </div>
                         )}

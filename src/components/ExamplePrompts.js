@@ -2,54 +2,24 @@ import React, { useState, useEffect } from "react";
 
 const prompts = [
   {
-    label: "Empleados habilitados",
-    prompt: "¿Cuántos empleados habilitados hay?",
+    label: "Top 10 suppliers",
+    prompt: "Detailed list of the 10 suppliers with the highest amount of approved documentation.",
   },
   {
-    label: "Empleados inhabilitados",
-    prompt:
-      "Necesito un detalle de los empleados que los últimos 6 meses no fueron habilitados.",
+    label: "Expired documentation",
+    prompt: "List of suppliers with the highest amount of expired documentation in the last 30 days.",
   },
   {
-    label: "Empresas habilitadas",
-    prompt: "¿Cuántas empresas habilitadas existen en Argentina?",
+    label: "Rejected document types",
+    prompt: "Identify the most frequently rejected types of documents.",
   },
   {
-    label: "Altas de AFIP",
-    prompt: "¿Cuántas altas de AFIP fueron realizadas en los últimos 6 meses?",
+    label: "Contractor ranking",
+    prompt: "Ranking from 1 to 10 of contractors based on their documentary compliance.",
   },
   {
-    label: "Promedio de empleados habilitados",
-    prompt:
-      "¿Cuál es el promedio de empleados habilitados mensualmente en los últimos 6 meses?",
-  },
-  {
-    label: "Documentos aprobados",
-    prompt:
-      "¿Cuáles y cuántos fueron los documentos más aprobados en los últimos 6 meses?",
-  },
-  {
-    label: "Documentos rechazados",
-    prompt:
-      "¿Cuáles y cuántos fueron los documentos más rechazados en los últimos 6 meses?",
-  },
-  {
-    label: "Empresas modo Integral",
-    prompt:
-      "¿Cuántas empresas están habilitadas para el tipo de servicio Integral?",
-  },
-  {
-    label: "Empresas modo Renting",
-    prompt:
-      "¿Cuántas empresas están habilitadas para el tipo de servicio Renting?",
-  },
-  {
-    label: "CUIT de empresas",
-    prompt: "Quiero un detalle del CUIT de todas las empresas en Argentina.",
-  },
-  {
-    label: "Empleado más Antigüo",
-    prompt: "¿Cuál es el empleado más antigüo?",
+    label: "Authorized employees",
+    prompt: "List of contractors with the highest number of authorized employees.",
   },
 ];
 
@@ -63,6 +33,25 @@ const ExamplePrompts = ({ onPromptClick }) => {
     "bi-briefcase",
     "bi-clipboard",
     "bi-building",
+    "bi-bar-chart",
+    "bi-graph-up",
+    "bi-pie-chart",
+    "bi-people",
+    "bi-gear",
+    "bi-calendar",
+    "bi-cash",
+    "bi-credit-card",
+    "bi-file-earmark",
+    "bi-folder",
+    "bi-globe",
+    "bi-handshake",
+    "bi-laptop",
+    "bi-phone",
+    "bi-printer",
+    "bi-receipt",
+    "bi-shield",
+    "bi-wallet",
+    "bi-wrench",
   ];
 
   const getRandomPrompts = () => {
