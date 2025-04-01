@@ -8,7 +8,10 @@ import {
   YAxis,
   Tooltip,
   Legend,
+  PieChart,
+  Pie,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
 import ReactDOM from "react-dom";
 
@@ -25,19 +28,39 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
   const messagesEndRef = useRef(null);
   const demo = true;
 
-  const data = [
+  const barData = [
     { name: "GOMEZ CONSTRUCCIONES", approved: 210 },
     { name: "IBERCOM MULTICOM SA", approved: 198 },
     { name: "Bayton S.A.", approved: 195 },
     { name: "Maite Gimenez", approved: 193 },
     { name: "SUCASA COMUNICACIONES", approved: 187 },
-    { name: "SAAVEDRA PARK SRL", approved: 183 },
-    { name: "LATIN AMERICA POSTAL", approved: 182 },
-    { name: "GRUPO TEC-COM S.R.L.", approved: 173 },
-    { name: "ELIPGO SA", approved: 172 },
   ];
 
-  const GraphComponent = () => (
+  const pieData = [
+    { name: "FACILITY SERVICE S.A.", approved: 456678 },
+    { name: "MARKET LINE S.A.", approved: 306936 },
+    { name: "VN GLOBAL BPO S.A.", approved: 252560 },
+    { name: "AEGIS ARGENTINA S.A.", approved: 238659 },
+    { name: "CENTRO INTERACCION MULTIMEDIA S.A.", approved: 237698 },
+  ];
+
+  // Colores dinámicos para las barras
+  const barColors = [
+    "#FF8042",
+    "#FFBB28",
+    "#0088FE",
+    "#00C49F",
+    "#FF6847",
+    "#D9D9D9",
+    "#FF6F91",
+    "#A8DADC",
+    "#457B9D",
+  ];
+
+  // Colores dinámicos para las porciones de la torta
+  const pieColors = ["#FF8042", "#FFBB28", "#0088FE", "#00C49F", "#FF6847"];
+
+  const BarGraphComponent = ({ data }) => (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart
         data={data}
@@ -48,15 +71,54 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
         <YAxis dataKey="name" type="category" width={150} />
         <Tooltip />
         <Legend />
-        <Bar dataKey="approved" fill="#8884d8" barSize={30} />
+        {data.map((entry, index) => (
+          <Bar
+            key={index}
+            dataKey="approved"
+            fill={barColors[index % barColors.length]}
+            barSize={30}
+          />
+        ))}
       </BarChart>
+    </ResponsiveContainer>
+  );
+
+  const PieGraphComponent = ({ data }) => (
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart>
+        <Pie
+          data={data}
+          dataKey="approved"
+          nameKey="name"
+          cx="50%"
+          cy="50%"
+          outerRadius={100}
+          fill={pieColors[0]} // El primer color de pieColors
+          label
+        >
+          {data.map((entry, index) => (
+            <Cell key={index} fill={pieColors[index % pieColors.length]} />
+          ))}
+        </Pie>
+        <Tooltip />
+        <Legend />
+      </PieChart>
     </ResponsiveContainer>
   );
 
   const graphExport = (graphExportId) => {
     console.log(graphExportId);
 
-    if (graphExportId != 1) {
+    let graphComponent = null;
+    let graphData = [];
+
+    if (graphExportId === 1) {
+      graphData = barData;
+      graphComponent = <BarGraphComponent data={graphData} />;
+    } else if (graphExportId === 2) {
+      graphData = pieData;
+      graphComponent = <PieGraphComponent data={graphData} />;
+    } else {
       Swal.fire({
         title: "Warning",
         text: "Chart not available",
@@ -67,11 +129,14 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
     }
 
     Swal.fire({
-      title: "Suppliers with the most approved documents",
+      title:
+        graphExportId === 1
+          ? "Approved Documents (Bar Chart)"
+          : "Suppliers with the Most Approved Documents (Pie Chart)",
       html: `<div id="chart-container" style="width: 100%; height: 400px; display: flex; justify-content: center; align-items: center;"></div>`,
       didOpen: () => {
         const chartContainer = document.getElementById("chart-container");
-        ReactDOM.render(<GraphComponent />, chartContainer);
+        ReactDOM.render(graphComponent, chartContainer);
       },
       showCloseButton: true,
       width: "80%",
@@ -83,10 +148,10 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
     //(fileObject);
     if (!fileObject || !fileObject.name || !fileObject.content) {
       Swal.fire({
-        title: "Advertencia",
-        text: "Documento no valido!",
+        title: "Warning",
+        text: "Invalid document!",
         icon: "warning",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: "Accept",
       });
       return;
     }
@@ -96,10 +161,10 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() =>
       Swal.fire({
-        title: "Exito",
-        text: "Texto Copiado al portapapeles!",
+        title: "Success",
+        text: "Text copied to clipboard!",
         icon: "success",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: "Accept",
       })
     );
   };
@@ -144,503 +209,39 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
         bot: 0,
         responseSQL: [
           {
-            proveedor_nombre_razon_social: "MARKET LINE S.A.",
-            proveedor_nombre_comercial: "CONTINUUM GBL",
-            proveedor_cuit: "30707256172",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "788",
-          },
-          {
-            proveedor_nombre_razon_social: "VATES S.A.",
-            proveedor_nombre_comercial: "VATES SA",
-            proveedor_cuit: "30698507892",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "618",
-          },
-          {
-            proveedor_nombre_razon_social: "NOVACOR S.R.L.",
-            proveedor_nombre_comercial: "NOVACOR CONSULTORA IT",
-            proveedor_cuit: "30708236027",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "577",
-          },
-          {
-            proveedor_nombre_razon_social: "DYNATACPHONE S.A.",
-            proveedor_nombre_comercial: "DYNATACPHONE S.A.",
-            proveedor_cuit: "30709250430",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "382",
-          },
-          {
-            proveedor_nombre_razon_social: "AEGIS ARGENTINA S.A.",
-            proveedor_nombre_comercial: "STARTEK",
-            proveedor_cuit: "30709849367",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "292",
-          },
-          {
-            proveedor_nombre_razon_social: "LOGICALIS ARGENTINA S.A.",
-            proveedor_nombre_comercial: "LOGICALIS",
-            proveedor_cuit: "33621885559",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "160",
-          },
-          {
-            proveedor_nombre_razon_social: "GRUPO N S.A.",
-            proveedor_nombre_comercial: "Grupo N S.A.",
-            proveedor_cuit: "30710846630",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "108",
-          },
-          {
-            proveedor_nombre_razon_social: "HECTOR ARMANDO GOMEZ",
-            proveedor_nombre_comercial: "GOMEZ CONSTRUCCIONES",
-            proveedor_cuit: "20102389175",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "95",
-          },
-          {
-            proveedor_nombre_razon_social: "DESARROLLO FINANROUX CORP. S.A.",
-            proveedor_nombre_comercial: "DESARROLLO FINANROUX CORP",
-            proveedor_cuit: "30710637527",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "81",
-          },
-          {
-            proveedor_nombre_razon_social: "TECNO VOZ NOROESTE S.A.",
-            proveedor_nombre_comercial: "EVOLTIS",
-            proveedor_cuit: "30698482253",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "80",
-          },
-          {
-            proveedor_nombre_razon_social: "VOICENTER S.A.",
-            proveedor_nombre_comercial: "VOICENTER",
-            proveedor_cuit: "30708689064",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "55",
-          },
-          {
-            proveedor_nombre_razon_social: "ICNET S.R.L.",
-            proveedor_nombre_comercial: "ICNET S.R.L.",
-            proveedor_cuit: "30709449849",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "52",
-          },
-          {
-            proveedor_nombre_razon_social: "TECHMOVIL S.R.L.",
-            proveedor_nombre_comercial: "TECHMOVIL",
-            proveedor_cuit: "30716119390",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "51",
-          },
-          {
-            proveedor_nombre_razon_social: "FABRICA S.R.L.",
-            proveedor_nombre_comercial: "FABRICA SRL",
-            proveedor_cuit: "30611977766",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "36",
-          },
-          {
-            proveedor_nombre_razon_social: "VN GLOBAL BPO S.A.",
-            proveedor_nombre_comercial: "VN GLOBAL BPO S.A.",
-            proveedor_cuit: "30698498222",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "35",
-          },
-          {
-            proveedor_nombre_razon_social: "FNET SYSTEM S.R.L.",
-            proveedor_nombre_comercial: "FNETSYSTEM S.R.L.",
-            proveedor_cuit: "30710235801",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "32",
-          },
-          {
-            proveedor_nombre_razon_social: "IBERCOM MULTICOM S.A.",
-            proveedor_nombre_comercial: "IBERCOM MULTICOM SA ",
-            proveedor_cuit: "30682101802",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "32",
-          },
-          {
-            proveedor_nombre_razon_social: "REDEX S.A.",
-            proveedor_nombre_comercial: "REDEX SA",
-            proveedor_cuit: "30709425796",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "26",
-          },
-          {
-            proveedor_nombre_razon_social: "FIBERQUIL S.R.L.",
-            proveedor_nombre_comercial: "FIBERQUIL S.R.L.",
-            proveedor_cuit: "30709326046",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "20",
-          },
-          {
-            proveedor_nombre_razon_social: "SOLFLIX S.A.",
-            proveedor_nombre_comercial: "SOLFLIX S.A.",
-            proveedor_cuit: "30687793486",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "17",
-          },
-          {
-            proveedor_nombre_razon_social: "TC TECH S.R.L.",
-            proveedor_nombre_comercial: "TCTECH",
-            proveedor_cuit: "30711189692",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "17",
-          },
-          {
-            proveedor_nombre_razon_social: "PROSEGUR S.A.",
-            proveedor_nombre_comercial: "PROSEGUR SA",
-            proveedor_cuit: "30575170125",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "16",
-          },
-          {
-            proveedor_nombre_razon_social: "MOVIL NOA S.R.L.",
-            proveedor_nombre_comercial: "MOVIL NOA SRL",
-            proveedor_cuit: "30710061765",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "16",
-          },
-          {
-            proveedor_nombre_razon_social: "NETMED S.A.S.",
-            proveedor_nombre_comercial:
-              "NETMED SOCIEDAD POR ACCIONES SIMPLIFICADA",
-            proveedor_cuit: "30716024357",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "16",
-          },
-          {
-            proveedor_nombre_razon_social: "LITORAL MOVIL S.R.L.",
-            proveedor_nombre_comercial: "Litoral Movil",
-            proveedor_cuit: "30710140401",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "14",
-          },
-          {
-            proveedor_nombre_razon_social: "LINO MOVIL S.R.L.",
-            proveedor_nombre_comercial: "Lino Movil",
-            proveedor_cuit: "30715232681",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "12",
-          },
-          {
-            proveedor_nombre_razon_social: "STARCEL PATAGONIA S.A.",
-            proveedor_nombre_comercial: "STARCEL",
-            proveedor_cuit: "30709552607",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "10",
-          },
-          {
-            proveedor_nombre_razon_social: "CMR LA CONCORDIA S.A.",
-            proveedor_nombre_comercial: "CMR LA CONCORDIA SA ",
-            proveedor_cuit: "30708698209",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "9",
-          },
-          {
-            proveedor_nombre_razon_social: "GESTAM ARGENTINA S.A.",
-            proveedor_nombre_comercial: "GESTAM ARGENTINA S.A",
-            proveedor_cuit: "30679636037",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "9",
-          },
-          {
-            proveedor_nombre_razon_social: "RUILARSA S.R.L.",
-            proveedor_nombre_comercial: "RUILARSA SRL",
-            proveedor_cuit: "30711054401",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "8",
-          },
-          {
-            proveedor_nombre_razon_social: "MIT INFORMATICA S.A.",
-            proveedor_nombre_comercial: "Netacom",
-            proveedor_cuit: "30710174667",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "8",
-          },
-          {
-            proveedor_nombre_razon_social: "MOVILBIT S.A.",
-            proveedor_nombre_comercial: "MOVILBIT SA",
-            proveedor_cuit: "30714685828",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "8",
-          },
-          {
-            proveedor_nombre_razon_social: "ATLANTICA TELECOMUNICACIONES S.A.",
-            proveedor_nombre_comercial: "ATLANTICA TELECOMUNICACIONES SA",
-            proveedor_cuit: "30656486380",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "8",
-          },
-          {
-            proveedor_nombre_razon_social: "SERVICIOS SITEM S.A.",
-            proveedor_nombre_comercial: "SERVICIOS SITEM SA",
-            proveedor_cuit: "30693214250",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "6",
-          },
-          {
-            proveedor_nombre_razon_social: "MOVILED S.A.",
-            proveedor_nombre_comercial: "MOVILED",
-            proveedor_cuit: "30714669709",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "6",
-          },
-          {
-            proveedor_nombre_razon_social: "AR CONSULTORES S.R.L.",
-            proveedor_nombre_comercial: "AR Consultores",
-            proveedor_cuit: "30708954639",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "6",
-          },
-          {
-            proveedor_nombre_razon_social: "MIG S.A.",
-            proveedor_nombre_comercial: "MiG SA",
-            proveedor_cuit: "30561265255",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "5",
-          },
-          {
-            proveedor_nombre_razon_social: "SUCASA COMUNICACIONES S.A.",
-            proveedor_nombre_comercial: "SUCASA COMUNICACIONES",
-            proveedor_cuit: "30711263035",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "5",
-          },
-          {
-            proveedor_nombre_razon_social: "G & G COMUNICACIONES S.R.L.",
-            proveedor_nombre_comercial: "G&G Comunicaciones S.R.L.",
-            proveedor_cuit: "30708669233",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "5",
-          },
-          {
-            proveedor_nombre_razon_social: "SCA COMMUNICATIONS S.A.",
-            proveedor_nombre_comercial: "Sca Communications S.A",
-            proveedor_cuit: "30710680945",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "5",
-          },
-          {
-            proveedor_nombre_razon_social: "NORTEC DESIGN S.R.L.",
-            proveedor_nombre_comercial: "NORTEC DESIGN SRL",
-            proveedor_cuit: "30715097911",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "5",
-          },
-          {
-            proveedor_nombre_razon_social: "MOVIL GROUP S.R.L.",
-            proveedor_nombre_comercial: "MOVIL GROUP S.R.L ",
-            proveedor_cuit: "30710770030",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "4",
-          },
-          {
-            proveedor_nombre_razon_social: "CONTRATISTA CLARO",
-            proveedor_nombre_comercial: "CONTRATISTA CLARO",
-            proveedor_cuit: "contratista.claro",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "4",
-          },
-          {
-            proveedor_nombre_razon_social: "FACILITY SERVICE S.A.",
-            proveedor_nombre_comercial: "FACILITY SERVICE S.A.",
-            proveedor_cuit: "30710953569",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "4",
-          },
-          {
-            proveedor_nombre_razon_social: "LUCOM SECURITY S.A.",
-            proveedor_nombre_comercial: "Lucom Security",
-            proveedor_cuit: "30707509518",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "4",
-          },
-          {
-            proveedor_nombre_razon_social: "LINKTELCO TELECOMUNICACIONES S.A.",
-            proveedor_nombre_comercial: "Linktelco Telecomunicaciones SA",
-            proveedor_cuit: "30712453423",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "3",
-          },
-          {
-            proveedor_nombre_razon_social: "ZOLUMAX S.R.L.",
-            proveedor_nombre_comercial: "Zolumax Srl",
-            proveedor_cuit: "30714985589",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "3",
-          },
-          {
-            proveedor_nombre_razon_social: "COMUNICACIONES Y CONSUMOS S.R.L.",
-            proveedor_nombre_comercial: "COMUNICACIONES Y CONSUMOS  SRL",
-            proveedor_cuit: "30709641030",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "3",
-          },
-          {
-            proveedor_nombre_razon_social: "CINETIK S.R.L.",
-            proveedor_nombre_comercial: "CINETIK SRL",
-            proveedor_cuit: "30709607622",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "3",
-          },
-          {
-            proveedor_nombre_razon_social: "ATLANTICA INSTALACIONES S.A.",
-            proveedor_nombre_comercial: "Atlantica Red de Servicios",
-            proveedor_cuit: "30716710633",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "SPANTECH S.A.",
-            proveedor_nombre_comercial: "SPANTECH",
-            proveedor_cuit: "30717984524",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "INTER CONNECTION S.A.S.",
-            proveedor_nombre_comercial: "INTER CONNECTION SAS",
-            proveedor_cuit: "30715994816",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "RED DE SERVICIOS S.A.",
-            proveedor_nombre_comercial: "RED DE SERVICIOS S.A.",
-            proveedor_cuit: "30716055635",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "INTER ACCESORIOS S.R.L.",
-            proveedor_nombre_comercial: "Inter Accesorios Srl",
-            proveedor_cuit: "30712398554",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "HIQUAL S.R.L.",
-            proveedor_nombre_comercial: "HIQUAL",
-            proveedor_cuit: "30710806892",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "2",
-          },
-          {
-            proveedor_nombre_razon_social:
-              "RECURSOS HUMANOS Y SOLUCIONES TECNOLOGICAS S.A.",
-            proveedor_nombre_comercial: "RH TECNOLOGIA",
-            proveedor_cuit: "30709993182",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "EMAR CEIBA S.A.",
-            proveedor_nombre_comercial: "EMAR CEIBA S.A.",
-            proveedor_cuit: "30711501238",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "TG2 S.R.L.",
-            proveedor_nombre_comercial: "TG2 S.R.L",
-            proveedor_cuit: "30710523467",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "FONE GALETI S.R.L.",
-            proveedor_nombre_comercial: "Fone Galeti S.R.L",
-            proveedor_cuit: "30710405146",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "DATACEL S.A.",
-            proveedor_nombre_comercial: "DATACEL SA",
-            proveedor_cuit: "33709227349",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "BAZAN FABIAN MARTIN ANTONIO",
-            proveedor_nombre_comercial: "BAZAN FABIAN MARTIN ANTONIO",
-            proveedor_cuit: "20291752005",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "COMUNICACIONES DEL SOL S.A.",
-            proveedor_nombre_comercial: "Claro",
-            proveedor_cuit: "30708702273",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "LAS AMIGAS SIMPLE ASOCIACION",
-            proveedor_nombre_comercial: "LAS AMIGAS",
-            proveedor_cuit: "30715087967",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "COTELSA S.R.L.",
-            proveedor_nombre_comercial: "COTELSA SRL",
-            proveedor_cuit: "30714476773",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "LUCOM CORPO S.A.",
-            proveedor_nombre_comercial: "Lucom Corpo",
-            proveedor_cuit: "30716207796",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "SAAVEDRA PARK S.R.L.",
-            proveedor_nombre_comercial: "SAAVEDRA PARK SRL",
-            proveedor_cuit: "33710415639",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "NICOLINI MARTA ROSANA",
-            proveedor_nombre_comercial: "Claro Agente Oficial",
-            proveedor_cuit: "27233469462",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "NASA S.A.",
-            proveedor_nombre_comercial: "NASA SOCIEDAD ANONIMA",
-            proveedor_cuit: "30710866496",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "STRATTON NEA S.A.",
-            proveedor_nombre_comercial: "KONECTA",
-            proveedor_cuit: "33714037469",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "GRUPO TEC-COM S.R.L.",
-            proveedor_nombre_comercial: "GRUPO TEC-COM S.R.L.",
-            proveedor_cuit: "30710773846",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "COMERCIAL PHONE S.A.",
-            proveedor_nombre_comercial: "Comercial Phone",
-            proveedor_cuit: "30710686544",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_pendientes: "1",
+            supplier_legal_name: "MARKET LINE S.A.",
+            supplier_trade_name: "CONTINUUM GBL",
+            supplier_tax_id: "30707256172",
+            supplier_nationality: "argentina",
+            document_pending_quantity: "788",
+          },
+          {
+            supplier_legal_name: "VATES S.A.",
+            supplier_trade_name: "VATES SA",
+            supplier_tax_id: "30698507892",
+            supplier_nationality: "argentina",
+            document_pending_quantity: "618",
+          },
+          {
+            supplier_legal_name: "NOVACOR S.R.L.",
+            supplier_trade_name: "NOVACOR CONSULTORA IT",
+            supplier_tax_id: "30708236027",
+            supplier_nationality: "argentina",
+            document_pending_quantity: "577",
+          },
+          {
+            supplier_legal_name: "DYNATACPHONE S.A.",
+            supplier_trade_name: "DYNATACPHONE S.A.",
+            supplier_tax_id: "30709250430",
+            supplier_nationality: "argentina",
+            document_pending_quantity: "382",
+          },
+          {
+            supplier_legal_name: "AEGIS ARGENTINA S.A.",
+            supplier_trade_name: "STARTEK",
+            supplier_tax_id: "30709849367",
+            supplier_nationality: "argentina",
+            document_pending_quantity: "292",
           },
         ],
         onRefresh:
@@ -675,257 +276,39 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
         bot: 1,
         responseSQL: [
           {
-            proveedor_nombre_razon_social: "MARKET LINE S.A.",
-            proveedor_nombre_comercial: "CONTINUUM GBL",
-            proveedor_cuit: "30707256172",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1592",
+            supplier_legal_name: "MARKET LINE S.A.",
+            supplier_trade_name: "CONTINUUM GBL",
+            supplier_tax_id: "30707256172",
+            supplier_nationality: "argentina",
+            authorized_employee_count: "1592",
           },
           {
-            proveedor_nombre_razon_social: "CENTRO INTERACCION MULTIMEDIA S.A.",
-            proveedor_nombre_comercial: "Apex",
-            proveedor_cuit: "30708276800",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1507",
+            supplier_legal_name: "CENTRO INTERACCION MULTIMEDIA S.A.",
+            supplier_trade_name: "Apex",
+            supplier_tax_id: "30708276800",
+            supplier_nationality: "argentina",
+            authorized_employee_count: "1507",
           },
           {
-            proveedor_nombre_razon_social: "AEGIS ARGENTINA S.A.",
-            proveedor_nombre_comercial: "STARTEK",
-            proveedor_cuit: "30709849367",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "102",
+            supplier_legal_name: "AEGIS ARGENTINA S.A.",
+            supplier_trade_name: "STARTEK",
+            supplier_tax_id: "30709849367",
+            supplier_nationality: "argentina",
+            authorized_employee_count: "102",
           },
           {
-            proveedor_nombre_razon_social: "GESTAM ARGENTINA S.A.",
-            proveedor_nombre_comercial: "GESTAM ARGENTINA S.A",
-            proveedor_cuit: "30679636037",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "99",
+            supplier_legal_name: "GESTAM ARGENTINA S.A.",
+            supplier_trade_name: "GESTAM ARGENTINA S.A",
+            supplier_tax_id: "30679636037",
+            supplier_nationality: "argentina",
+            authorized_employee_count: "99",
           },
           {
-            proveedor_nombre_razon_social: "DESARROLLO FINANROUX CORP. S.A.",
-            proveedor_nombre_comercial: "DESARROLLO FINANROUX CORP",
-            proveedor_cuit: "30710637527",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "62",
-          },
-          {
-            proveedor_nombre_razon_social: "EMAR CEIBA S.A.",
-            proveedor_nombre_comercial: "EMAR CEIBA S.A.",
-            proveedor_cuit: "30711501238",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "37",
-          },
-          {
-            proveedor_nombre_razon_social: "FABRICA S.R.L.",
-            proveedor_nombre_comercial: "FABRICA SRL",
-            proveedor_cuit: "30611977766",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "35",
-          },
-          {
-            proveedor_nombre_razon_social: "ICNET S.R.L.",
-            proveedor_nombre_comercial: "ICNET S.R.L.",
-            proveedor_cuit: "30709449849",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "28",
-          },
-          {
-            proveedor_nombre_razon_social: "DYNATACPHONE S.A.",
-            proveedor_nombre_comercial: "DYNATACPHONE S.A.",
-            proveedor_cuit: "30709250430",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "21",
-          },
-          {
-            proveedor_nombre_razon_social: "MOVILED S.A.",
-            proveedor_nombre_comercial: "MOVILED",
-            proveedor_cuit: "30714669709",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "12",
-          },
-          {
-            proveedor_nombre_razon_social: "HECTOR ARMANDO GOMEZ",
-            proveedor_nombre_comercial: "GOMEZ CONSTRUCCIONES",
-            proveedor_cuit: "20102389175",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "12",
-          },
-          {
-            proveedor_nombre_razon_social:
-              "CONSULTORES DE EMPRESAS I.T. S.R.L.",
-            proveedor_nombre_comercial: "CONSULTORES DE EMPRESAS I.T S.R.L",
-            proveedor_cuit: "33715730869",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "7",
-          },
-          {
-            proveedor_nombre_razon_social: "LUCOM SECURITY S.A.",
-            proveedor_nombre_comercial: "Lucom Security",
-            proveedor_cuit: "30707509518",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "6",
-          },
-          {
-            proveedor_nombre_razon_social: "STRATTON NEA S.A.",
-            proveedor_nombre_comercial: "KONECTA",
-            proveedor_cuit: "33714037469",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "5",
-          },
-          {
-            proveedor_nombre_razon_social: "DERBY S.A.",
-            proveedor_nombre_comercial: "DERBY SOCIEDAD ANONIMA",
-            proveedor_cuit: "30708678941",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "5",
-          },
-          {
-            proveedor_nombre_razon_social: "AR CONSULTORES S.R.L.",
-            proveedor_nombre_comercial: "AR Consultores",
-            proveedor_cuit: "30708954639",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "4",
-          },
-          {
-            proveedor_nombre_razon_social: "LOGICALIS ARGENTINA S.A.",
-            proveedor_nombre_comercial: "LOGICALIS",
-            proveedor_cuit: "33621885559",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "4",
-          },
-          {
-            proveedor_nombre_razon_social: "NORTEC DESIGN S.R.L.",
-            proveedor_nombre_comercial: "NORTEC DESIGN SRL",
-            proveedor_cuit: "30715097911",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "3",
-          },
-          {
-            proveedor_nombre_razon_social: "GESTION BUENOS AIRES S.A.",
-            proveedor_nombre_comercial: "GESTION BUENOS AIRES S.A",
-            proveedor_cuit: "30709019941",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "3",
-          },
-          {
-            proveedor_nombre_razon_social: "CUATRO NORTES S.R.L.",
-            proveedor_nombre_comercial: "CUATRONORTES SRL",
-            proveedor_cuit: "30708809620",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "NASA S.A.",
-            proveedor_nombre_comercial: "NASA SOCIEDAD ANONIMA",
-            proveedor_cuit: "30710866496",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "ECO TV S.A.",
-            proveedor_nombre_comercial: "ECOTV SA",
-            proveedor_cuit: "30695821693",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "LUCOM CORPO S.A.",
-            proveedor_nombre_comercial: "Lucom Corpo",
-            proveedor_cuit: "30716207796",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "SCA COMMUNICATIONS S.A.",
-            proveedor_nombre_comercial: "Sca Communications S.A",
-            proveedor_cuit: "30710680945",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "NOVACOR S.R.L.",
-            proveedor_nombre_comercial: "NOVACOR CONSULTORA IT",
-            proveedor_cuit: "30708236027",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "2",
-          },
-          {
-            proveedor_nombre_razon_social: "REDUCCION CELULARES S.R.L.",
-            proveedor_nombre_comercial: "COLFRE",
-            proveedor_cuit: "33711160219",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "ICH S.A.",
-            proveedor_nombre_comercial: "ICH SA",
-            proveedor_cuit: "30709769169",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "CMR LA CONCORDIA S.A.",
-            proveedor_nombre_comercial: "CMR LA CONCORDIA SA ",
-            proveedor_cuit: "30708698209",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "FACILITY SERVICE S.A.",
-            proveedor_nombre_comercial: "FACILITY SERVICE S.A.",
-            proveedor_cuit: "30710953569",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "CONTRATISTA CLARO",
-            proveedor_nombre_comercial: "CONTRATISTA CLARO",
-            proveedor_cuit: "contratista.claro",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "CEIBA UNO S. A.",
-            proveedor_nombre_comercial: "CEIBA UNO S. A.",
-            proveedor_cuit: "33718123629",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "MOVILSAT COMUNICACIONES S.A.",
-            proveedor_nombre_comercial: "Movilsat Comunicaciones",
-            proveedor_cuit: "30709157589",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "THINKING GREEN S.A.",
-            proveedor_nombre_comercial: "Apex",
-            proveedor_cuit: "30714247405",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "CINETIK S.R.L.",
-            proveedor_nombre_comercial: "CINETIK SRL",
-            proveedor_cuit: "30709607622",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "DATACEL S.A.",
-            proveedor_nombre_comercial: "DATACEL SA",
-            proveedor_cuit: "33709227349",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1",
-          },
-          {
-            proveedor_nombre_razon_social: "VN GLOBAL BPO S.A.",
-            proveedor_nombre_comercial: "VN GLOBAL BPO S.A.",
-            proveedor_cuit: "30698498222",
-            proveedor_nacionalidad: "argentina",
-            cantidad_empleados_autorizados: "1",
+            supplier_legal_name: "DESARROLLO FINANROUX CORP. S.A.",
+            supplier_trade_name: "DESARROLLO FINANROUX CORP",
+            supplier_tax_id: "30710637527",
+            supplier_nationality: "argentina",
+            authorized_employee_count: "62",
           },
         ],
         onRefresh:
@@ -960,39 +343,39 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
         bot: 1,
         responseSQL: [
           {
-            proveedor_nombre_razon_social: "FACILITY SERVICE S.A.",
-            proveedor_nombre_comercial: "FACILITY SERVICE S.A.",
-            proveedor_cuit: "30710953569",
-            proveedor_nacionalidad: "argentina",
-            empleado_cantidad_aprobados: "456678",
+            supplier_legal_name: "FACILITY SERVICE S.A.",
+            supplier_trade_name: "FACILITY SERVICE S.A.",
+            supplier_tax_id: "30710953569",
+            supplier_nationality: "argentina",
+            employee_approved_quantity: "456678",
           },
           {
-            proveedor_nombre_razon_social: "MARKET LINE S.A.",
-            proveedor_nombre_comercial: "CONTINUUM GBL",
-            proveedor_cuit: "30707256172",
-            proveedor_nacionalidad: "argentina",
-            empleado_cantidad_aprobados: "306936",
+            supplier_legal_name: "MARKET LINE S.A.",
+            supplier_trade_name: "CONTINUUM GBL",
+            supplier_tax_id: "30707256172",
+            supplier_nationality: "argentina",
+            employee_approved_quantity: "306936",
           },
           {
-            proveedor_nombre_razon_social: "VN GLOBAL BPO S.A.",
-            proveedor_nombre_comercial: "VN GLOBAL BPO S.A.",
-            proveedor_cuit: "30698498222",
-            proveedor_nacionalidad: "argentina",
-            empleado_cantidad_aprobados: "252560",
+            supplier_legal_name: "VN GLOBAL BPO S.A.",
+            supplier_trade_name: "VN GLOBAL BPO S.A.",
+            supplier_tax_id: "30698498222",
+            supplier_nationality: "argentina",
+            employee_approved_quantity: "252560",
           },
           {
-            proveedor_nombre_razon_social: "AEGIS ARGENTINA S.A.",
-            proveedor_nombre_comercial: "STARTEK",
-            proveedor_cuit: "30709849367",
-            proveedor_nacionalidad: "argentina",
-            empleado_cantidad_aprobados: "238659",
+            supplier_legal_name: "AEGIS ARGENTINA S.A.",
+            supplier_trade_name: "STARTEK",
+            supplier_tax_id: "30709849367",
+            supplier_nationality: "argentina",
+            employee_approved_quantity: "238659",
           },
           {
-            proveedor_nombre_razon_social: "CENTRO INTERACCION MULTIMEDIA S.A.",
-            proveedor_nombre_comercial: "Apex",
-            proveedor_cuit: "30708276800",
-            proveedor_nacionalidad: "argentina",
-            empleado_cantidad_aprobados: "237698",
+            supplier_legal_name: "CENTRO INTERACCION MULTIMEDIA S.A.",
+            supplier_trade_name: "Apex",
+            supplier_tax_id: "30708276800",
+            supplier_nationality: "argentina",
+            employee_approved_quantity: "237698",
           },
         ],
         onRefresh:
@@ -1001,7 +384,7 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
         files: null,
         created_at: "2025-03-27T09:04:02.000Z",
         role: "system",
-        graphExport: 0,
+        graphExport: 2,
       },
       {
         relacion: 5,
@@ -1024,47 +407,47 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
         chat_id: 1,
         sender: "system",
         content:
-        "Here’s a detailed list of the **5 suppliers** with the **highest amount of approved documentation**: \n\n2. **HECTOR ARMANDO GOMEZ**\n   - **Commercial Name:** GOMEZ CONSTRUCCIONES\n   - **CUIT:** 20-10238917-5\n   - **Nationality:** Argentina\n   - **Approved Documents:** **210** 📄\n\n3. **IBERCOM MULTICOM S.A.**\n   - **Commercial Name:** IBERCOM MULTICOM SA\n   - **CUIT:** 30-68210180-2\n   - **Nationality:** Argentina\n   - **Approved Documents:** **198** 📄\n\n4. **BAYTON S.A.**\n   - **Commercial Name:** Bayton S.A.\n   - **CUIT:** 33-57021065-9\n   - **Nationality:** Argentina\n   - **Approved Documents:** **195** 📄\n\n5. **TRADING INTERNACIONAL S.A.**\n   - **Commercial Name:** Maite Gimenez\n   - **CUIT:** 30-68544117-5\n   - **Nationality:** Argentina\n   - **Approved Documents:** **193** 📄",
+          "Here’s a detailed list of the **5 suppliers** with the **highest amount of approved documentation**: \n\n2. **HECTOR ARMANDO GOMEZ**\n   - **Commercial Name:** GOMEZ CONSTRUCCIONES\n   - **CUIT:** 20-10238917-5\n   - **Nationality:** Argentina\n   - **Approved Documents:** **210** 📄\n\n3. **IBERCOM MULTICOM S.A.**\n   - **Commercial Name:** IBERCOM MULTICOM SA\n   - **CUIT:** 30-68210180-2\n   - **Nationality:** Argentina\n   - **Approved Documents:** **198** 📄\n\n4. **BAYTON S.A.**\n   - **Commercial Name:** Bayton S.A.\n   - **CUIT:** 33-57021065-9\n   - **Nationality:** Argentina\n   - **Approved Documents:** **195** 📄\n\n5. **TRADING INTERNACIONAL S.A.**\n   - **Commercial Name:** Maite Gimenez\n   - **CUIT:** 30-68544117-5\n   - **Nationality:** Argentina\n   - **Approved Documents:** **193** 📄",
         bot: 1,
         responseSQL: [
           {
-            proveedor_nombre_razon_social: "HECTOR ARMANDO GOMEZ",
-            proveedor_nombre_comercial: "GOMEZ CONSTRUCCIONES",
-            proveedor_cuit: "20102389175",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_aprobados: "210",
+            supplier_legal_name: "HECTOR ARMANDO GOMEZ",
+            supplier_trade_name: "GOMEZ CONSTRUCCIONES",
+            supplier_tax_id: "20102389175",
+            supplier_nationality: "argentina",
+            document_approved_quantity: "210",
           },
           {
-            proveedor_nombre_razon_social: "IBERCOM MULTICOM S.A.",
-            proveedor_nombre_comercial: "IBERCOM MULTICOM SA ",
-            proveedor_cuit: "30682101802",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_aprobados: "198",
+            supplier_legal_name: "IBERCOM MULTICOM S.A.",
+            supplier_trade_name: "IBERCOM MULTICOM SA ",
+            supplier_tax_id: "30682101802",
+            supplier_nationality: "argentina",
+            document_approved_quantity: "198",
           },
           {
-            proveedor_nombre_razon_social: "BAYTON S.A.",
-            proveedor_nombre_comercial: "Bayton S.A. ",
-            proveedor_cuit: "33570210659",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_aprobados: "195",
+            supplier_legal_name: "BAYTON S.A.",
+            supplier_trade_name: "Bayton S.A.",
+            supplier_tax_id: "33570210659",
+            supplier_nationality: "argentina",
+            document_approved_quantity: "195",
           },
           {
-            proveedor_nombre_razon_social: "TRADING INTERNACIONAL S.A.",
-            proveedor_nombre_comercial: "Maite Gimenez",
-            proveedor_cuit: "30685441175",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_aprobados: "193",
+            supplier_legal_name: "TRADING INTERNACIONAL S.A.",
+            supplier_trade_name: "Maite Gimenez",
+            supplier_tax_id: "30685441175",
+            supplier_nationality: "argentina",
+            document_approved_quantity: "193",
           },
           {
-            proveedor_nombre_razon_social: "SUCASA COMUNICACIONES S.A.",
-            proveedor_nombre_comercial: "SUCASA COMUNICACIONES",
-            proveedor_cuit: "30711263035",
-            proveedor_nacionalidad: "argentina",
-            documento_cantidad_aprobados: "187",
+            supplier_legal_name: "SUCASA COMUNICACIONES S.A.",
+            supplier_trade_name: "SUCASA COMUNICACIONES",
+            supplier_tax_id: "30711263035",
+            supplier_nationality: "argentina",
+            document_approved_quantity: "187",
           },
         ],
         onRefresh:
-        "Here’s a detailed list of the **5 suppliers** with the **highest amount of approved documentation**: \n\n2. **HECTOR ARMANDO GOMEZ**\n   - **Commercial Name:** GOMEZ CONSTRUCCIONES\n   - **CUIT:** 20-10238917-5\n   - **Nationality:** Argentina\n   - **Approved Documents:** **210** 📄\n\n3. **IBERCOM MULTICOM S.A.**\n   - **Commercial Name:** IBERCOM MULTICOM SA\n   - **CUIT:** 30-68210180-2\n   - **Nationality:** Argentina\n   - **Approved Documents:** **198** 📄\n\n4. **BAYTON S.A.**\n   - **Commercial Name:** Bayton S.A.\n   - **CUIT:** 33-57021065-9\n   - **Nationality:** Argentina\n   - **Approved Documents:** **195** 📄\n\n5. **TRADING INTERNACIONAL S.A.**\n   - **Commercial Name:** Maite Gimenez\n   - **CUIT:** 30-68544117-5\n   - **Nationality:** Argentina\n   - **Approved Documents:** **193** 📄",
+          "Here’s a detailed list of the **5 suppliers** with the **highest amount of approved documentation**: \n\n2. **HECTOR ARMANDO GOMEZ**\n   - **Commercial Name:** GOMEZ CONSTRUCCIONES\n   - **CUIT:** 20-10238917-5\n   - **Nationality:** Argentina\n   - **Approved Documents:** **210** 📄\n\n3. **IBERCOM MULTICOM S.A.**\n   - **Commercial Name:** IBERCOM MULTICOM SA\n   - **CUIT:** 30-68210180-2\n   - **Nationality:** Argentina\n   - **Approved Documents:** **198** 📄\n\n4. **BAYTON S.A.**\n   - **Commercial Name:** Bayton S.A.\n   - **CUIT:** 33-57021065-9\n   - **Nationality:** Argentina\n   - **Approved Documents:** **195** 📄\n\n5. **TRADING INTERNACIONAL S.A.**\n   - **Commercial Name:** Maite Gimenez\n   - **CUIT:** 30-68544117-5\n   - **Nationality:** Argentina\n   - **Approved Documents:** **193** 📄",
         visible: true,
         files: null,
         created_at: "2025-03-27T09:05:02.000Z",
@@ -1096,9 +479,9 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
       console.log(e);
       Swal.fire({
         title: "Error",
-        text: "No se pudo cargar el historial. Por favor, inténtalo nuevamente.",
+        text: "Failed to load history. Please try again.",
         icon: "error",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: "Accept",
       });
       resetChat();
     } finally {
@@ -1179,10 +562,10 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
   const fetchApiData = async (prompt) => {
     if (!prompt) {
       Swal.fire({
-        title: "Advertencia",
-        text: "No se puede enviar una consulta vacia",
+        title: "Warning",
+        text: "Cannot send an empty query",
         icon: "warning",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: "Accept",
       });
       return;
     }
@@ -1263,9 +646,9 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
     } else {
       Swal.fire({
         title: "Error",
-        text: "No se pudo cargar el historial. Por favor, inténtalo nuevamente.",
+        text: "Failed to load history. Please try again.",
         icon: "error",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: "Accept",
       });
       resetChat();
     }
@@ -1313,10 +696,10 @@ const useChat = (selectedChatId, onNewChat, refreshChats, logo, textGif) => {
   const exportToExcel = async (responseSQL) => {
     if (!Array.isArray(responseSQL) || responseSQL.length === 0)
       return Swal.fire({
-        title: "Advertencia",
-        text: "No hay nada para exportar",
+        title: "Warning",
+        text: "There is nothing to export",
         icon: "warning",
-        confirmButtonText: "Aceptar",
+        confirmButtonText: "Accept",
       });
 
     setExporting(true);
