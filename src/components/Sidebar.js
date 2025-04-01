@@ -32,7 +32,7 @@ const Sidebar = ({
   const demoData = [
     {
         "id_chat": 1,
-        "label_chat": "Greeting & assistance 😊",
+        "label_chat": "Pre-loaded Reports 😊",
         "status": "activo",
         "created_at": "2025-03-27T08:52:02.103Z"
     }
